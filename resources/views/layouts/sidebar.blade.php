@@ -23,7 +23,7 @@
                         <a href="colors.html">Pengguna</a>
                     </li>
                     <li>
-                        <a href="typography.html">Pegawai</a>
+                        <a @if(Request::segment(1) == 'pegawai') class="active" @endif href="{{ url('pegawai') }}">Pegawai</a>
                     </li>
                     <li>
                         <a @if(Request::segment(1) == 'ruangan') class="active" @endif href="{{ url('ruangan') }}">Ruangan</a>
@@ -32,7 +32,7 @@
                         <a @if(Request::segment(1) == 'shift') class="active" @endif href="{{ url('shift') }}">Shift</a>
                     </li>
                     <li>
-                        <a href="buttons.html">Hari Libur</a>
+                        <a @if(Request::segment(1) == 'harilibur') class="active" @endif href="{{ url('harilibur') }}">Hari Libur</a>
                     </li>
                 </ul>
             </li>

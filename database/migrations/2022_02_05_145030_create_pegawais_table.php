@@ -21,6 +21,7 @@ class CreatePegawaisTable extends Migration
             $table->string('nik_pegawai', 100)->nullable();
             $table->string('nama_pegawai', 255);
             $table->string('gender', 10);
+            $table->string('status', 20);
             $table->string('telepon_pegawai', 20)->nullable();
             $table->mediumText('alamat_pegawai')->nullable();
             $table->mediumText('foto_pegawai')->default('default.jpg')->nullable();

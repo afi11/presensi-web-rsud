@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Mobile\AuthController;
+use App\Http\Controllers\Mobile\PresensiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,5 +21,11 @@ Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user-profile', [AuthController::class, 'userProfile']);    
+    Route::get('/user-profile', [AuthController::class, 'userProfile']);
+});
+
+
+Route::group(['middleware' => 'api'], function ($router) {
+    // Presensi
+    Route::get('fetch-time-presensi', [PresensiController::class, 'fetchTime']);
 });

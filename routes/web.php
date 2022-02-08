@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ShiftController;
 use App\Http\Controllers\Web\RuanganController;
+use App\Http\Controllers\Web\PegawaiController;
+use App\Http\Controllers\Web\HariLiburController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,3 +21,5 @@ use App\Http\Controllers\Web\RuanganController;
 Route::get('dashboard', [DashboardController::class, 'index']);
 Route::resource('shift', ShiftController::class);
 Route::resource('ruangan', RuanganController::class);
+Route::resource('pegawai', PegawaiController::class);
+Route::resource('harilibur', HariLiburController::class);

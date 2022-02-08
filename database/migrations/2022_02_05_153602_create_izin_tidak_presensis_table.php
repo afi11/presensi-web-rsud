@@ -19,7 +19,7 @@ class CreateIzinTidakPresensisTable extends Migration
             $table->integer('jadwal_id');
             $table->date('tanggal_presensi');
             $table->string('tipe_presensi', 20);
-            $table->string('file_izin');
+            $table->string('file_izin')->nullable();
             $table->timestamps();
         });
     }
