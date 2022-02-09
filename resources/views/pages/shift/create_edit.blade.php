@@ -25,6 +25,20 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
+                        <label>Kode Shift</label>
+                        <input class="form-control @error('kode_shift') is-invalid @enderror" name="kode_shift"
+                            type="text" placeholder="Contoh: PAGI-CM/PAGI-GIZI"
+                            @if($isEdit) value="{{ $shift->kode_shift }}" @endif />
+                        @error('kode_shift')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+
+                        @enderror
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
                         <label>Nama Shift</label>
                         <input class="form-control @error('nama_shift') is-invalid @enderror" name="nama_shift"
                             type="text" placeholder="Contoh: Pagi/Siang/Malam"
@@ -61,7 +75,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="form-group">
+                    <div class="form-group mt-4">
                         <button type="submit" class="btn btn-success text-white pointer">Simpan</button>
                         <a href="{{ url()->previous() }}" class="btn btn-primary text-white pointer">Kembali</a>
                     </div>

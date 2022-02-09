@@ -13,8 +13,6 @@ class Jadwal extends Model
         "pegawai_code",
         "ruangan_jadwal_id",
         "shift_jadwal_id",
-        "tanggal",
-        "bulan",
-        "tahun"
+        "tanggal"
     ];
 }

@@ -19,11 +19,13 @@ class ShiftController extends Controller
         $validate_data = $this->validate(
             $request,
             [
+                'kode_shift' => 'required',
                 'nama_shift' => 'required',
                 'jam_masuk' => 'required',
                 'jam_pulang' => 'required',
             ],
             [
+                'kode_shift.required' => 'Kode shift harus diisi',
                 'nama_shift.required' => 'Nama shift harus diisi',
                 'jam_masuk.required' => 'Jam masuk harus diisi',
                 'jam_pulang.required' => 'Jam pulang harus diisi',
@@ -99,6 +101,7 @@ class ShiftController extends Controller
     {
         $this->validation($request);
         $shift = TipeShift::find($id);
+        $shift->kode_shift = $request->kode_shift;
         $shift->nama_shift = $request->nama_shift;
         $shift->jam_masuk = $request->jam_masuk;
         $shift->jam_pulang = $request->jam_pulang;

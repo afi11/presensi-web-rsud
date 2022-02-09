@@ -9,5 +9,5 @@ class TipeShift extends Model
 {
     use HasFactory;
     protected $table = 'tipe_shift';
-    protected $fillable = ['nama_shift', 'jam_masuk', 'jam_pulang'];
+    protected $fillable = ['kode_shift', 'nama_shift', 'jam_masuk', 'jam_pulang'];
 }

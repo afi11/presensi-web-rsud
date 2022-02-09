@@ -29,6 +29,7 @@
             <thead>
                 <tr>
                     <th>No</th>
+                    <th>Kode Shift</th>
                     <th>Shift</th>
                     <th>Jama Masuk</th>
                     <th>Jama Pulang</th>
@@ -41,6 +42,7 @@
                 @php $no++; @endphp
                 <tr>
                     <td>{{ $no }}</td>
+                    <td>{{ $row->kode_shift }}</td>
                     <td>{{ $row->nama_shift }}</td>
                     <td>{{ $row->jam_masuk }}</td>
                     <td>{{ $row->jam_pulang }}</td>

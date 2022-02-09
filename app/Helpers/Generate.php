@@ -3,5 +3,5 @@
 use Illuminate\Support\Str;
 
 function genKodePegawai() {
-    return Str::random(32);
+    return Str::random(8);
 }

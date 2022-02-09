@@ -41,7 +41,7 @@
                     <span class="nav-label">Presensi</span><i class="fa fa-angle-left arrow"></i></a>
                 <ul class="nav-2-level collapse in">
                     <li>
-                        <a href="form_basic.html">Jadwal</a>
+                        <a @if(Request::segment(1) == 'jadwal') class="active" @endif href="{{ url('jadwal') }}">Jadwal</a>
                     </li>
                     <li>
                         <a href="form_advanced.html">Hasil Presensi</a>
