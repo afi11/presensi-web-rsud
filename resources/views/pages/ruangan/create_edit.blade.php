@@ -2,38 +2,46 @@
 @section('title', $page)
 @section('content')
 <div class="page-heading">
-    <h1 class="page-title">@if($isEdit) Edit @else Tambah @endif Ruangan</h1>
+    <h1 class="page-title">@if($isEdit) Edit @else Tambah @endif Divisi</h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
             <a href="{{ url()->previous() }}"><i class="la la-home font-20"></i></a>
         </li>
-        <li class="breadcrumb-item">@if($isEdit) Edit @else Tambah @endif Ruangan</li>
+        <li class="breadcrumb-item">@if($isEdit) Edit @else Tambah @endif Divisi</li>
     </ol>
 </div>
 <div class="ibox mt-3">
     <div class="ibox-body">
         @if($isEdit)
-            @php $url = route('ruangan.update', $ruangan->id) @endphp
+        @php $url = route('ruangan.update', $ruangan->id) @endphp
         @else
-            @php $url = route('ruangan.store') @endphp
+        @php $url = route('ruangan.store') @endphp
         @endif
         <form method="POST" action="{{ $url }}">
             @if($isEdit)
-                {{ method_field('put') }}
+            {{ method_field('put') }}
             @endif
             @csrf
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Nama Ruangan</label>
-                        <input class="form-control @error('nama_ruangan') is-invalid @enderror" name="nama_ruangan"
-                            type="text" placeholder="Contoh: Kertajaya/Perencanaan/Keuangan"
-                            @if($isEdit) value="{{ $ruangan->nama_ruangan }}" @endif />
-                        @error('nama_ruangan')
+                        <label>Nama Divisi<span class="text-danger"> * </span></label>
+                        <input class="form-control @error('namaDivisi') is-invalid @enderror" name="namaDivisi"
+                            type="text" placeholder="Contoh: Kertajaya/Perencanaan/Keuangan" @if($isEdit)
+                            value="{{ $ruangan->namaDivisi }}" @endif />
+                        @error('namaDivisi')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
                         @enderror
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Keterangan Divisi</label>
+                        <input class="form-control" name="keteranganDivisi"
+                            type="text" placeholder=".." @if($isEdit)
+                            value="{{ $ruangan->keteranganDivisi }}" @endif />
                     </div>
                 </div>
                 <div class="col-md-4">

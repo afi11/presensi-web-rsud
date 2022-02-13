@@ -26,10 +26,10 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Tanggal Hari Libur</label>
-                        <input class="form-control @error('tanggal_libur') is-invalid @enderror" 
-                            name="tanggal_libur" type="date" 
-                            @if($isEdit) value="{{ $hariLibur->tanggal_libur }}" @endif />
-                        @error('tanggal_libur')
+                        <input class="form-control @error('tanggalLibur') is-invalid @enderror" 
+                            name="tanggalLibur" type="date" 
+                            @if($isEdit) value="{{ $hariLibur->tanggalLibur }}" @endif />
+                        @error('tanggalLibur')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
@@ -38,19 +38,19 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Nama Shift</label>
-                        <select class="custom-select" name="shift_id">
+                        <label>Nama Divisi</label>
+                        <select class="custom-select" name="idDivisi">
                             <option value="">Pilih salah satu</option>
-                            @foreach($shift as $row)
+                            @foreach($divisi as $row)
                                 <option value="{{ $row->id }}" 
                                 @if($isEdit) 
-                                    @if($row->id == $hariLibur->shift_id)
+                                    @if($row->id == $hariLibur->idDivisi)
                                         selected
                                     @endif
-                                @endif>{{ $row->nama_shift }}</option>
+                                @endif>{{ $row->namaDivisi }}</option>
                             @endforeach
                         </select>
-                        @error('shift_id')
+                        @error('idDivisi')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>

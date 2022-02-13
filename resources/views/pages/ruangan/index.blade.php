@@ -1,18 +1,18 @@
 @extends('layouts.main')
-@section('title','Halaman Kelola Ruangan')
+@section('title','Halaman Kelola Divisi')
 @section('content')
 <div class="page-heading">
-    <h1 class="page-title">Kelola Ruangan</h1>
+    <h1 class="page-title">Kelola Divisi</h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
             <a href="{{ url()->previous() }}"><i class="la la-home font-20"></i></a>
         </li>
-        <li class="breadcrumb-item">Kelola Ruangan</li>
+        <li class="breadcrumb-item">Kelola Divisi</li>
     </ol>
 </div>
 <div class="ibox mt-3">
     <div class="ibox-head">
-        <div class="ibox-title">Data Ruangan</div>
+        <div class="ibox-title">Data Divisi</div>
     </div>
     <div class="ibox-body">
         <a href="{{ route('ruangan.create') }}" class="btn btn-success mb-3 text-white"><span class="fa fa-plus"></span>
@@ -29,7 +29,8 @@
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Ruangan</th>
+                    <th>Divisi</th>
+                    <th>Keterangan</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -39,7 +40,8 @@
                 @php $no++; @endphp
                 <tr>
                     <td>{{ $no }}</td>
-                    <td>{{ $row->nama_ruangan }}</td>
+                    <td>{{ $row->namaDivisi }}</td>
+                    <td>{{ $row->keteranganDivisi }}</td>
                     <td>
                         <a href="{{ route('ruangan.edit', $row->id) }}"
                             class="btn btn-primary btn-sm mb-3 text-white"><span class="fa fa-edit"></span> Edit</a>
@@ -58,7 +60,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                Apakah ruangan {{ $row->nama_ruangan }} akan dihapus ?
+                                Apakah divisi {{ $row->namaDivisi }} akan dihapus ?
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger btn-pill"

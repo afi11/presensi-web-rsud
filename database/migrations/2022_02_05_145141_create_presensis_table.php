@@ -15,13 +15,24 @@ class CreatePresensisTable extends Migration
     {
         Schema::create('presensi', function (Blueprint $table) {
             $table->id();
-            $table->integer('pegawai_code');
-            $table->integer('jadwal_id');
-            $table->date('tanggal_presensi');
-            $table->time('presensi_masuk');
-            $table->time('presensi_pulang');
-            $table->time('telat_masuk');
-            $table->time('telat_pulang');
+            $table->integer('pegawaiCode');
+            $table->integer('idRuleIzin')->nullable();
+            $table->integer('idWaktuReguler')->nullable();
+            $table->integer('idWaktuShift')->nullable();
+            $table->integer('idRuleTelat')->nullable();
+            $table->date('tanggalPresensi')->nullable();
+            $table->time('jamPresensiMasuk')->nullable();
+            $table->time('jamPresensiPulang')->nullable();
+            $table->time('telatMasuk')->nullable();
+            $table->time('jarakWaktuPulang')->nullable();
+            $table->string('jarakPresensi', 20)->nullable();
+            $table->string('latitudePresensi')->nullable();
+            $table->string('longitudePresensi')->nullable();
+            $table->string('keteranganIzin')->nullable();
+            $table->date('tanggalMulaiIzin')->nullable();
+            $table->date('tanggalAkhirIzin')->nullable();
+            $table->string('dokumenPendukung')->nullable();
+            $table->string('statusIzin')->nullable();
             $table->timestamps();
         });
     }

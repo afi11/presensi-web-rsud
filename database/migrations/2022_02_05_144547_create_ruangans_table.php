@@ -13,9 +13,10 @@ class CreateRuangansTable extends Migration
      */
     public function up()
     {
-        Schema::create('ruangan', function (Blueprint $table) {
+        Schema::create('divisi', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_ruangan', 50);
+            $table->string('namaDivisi', 50);
+            $table->string('keteranganDivisi', 50)->nullable();
             $table->timestamps();
         });
     }

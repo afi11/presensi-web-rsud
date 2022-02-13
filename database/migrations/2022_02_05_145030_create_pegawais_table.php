@@ -16,14 +16,16 @@ class CreatePegawaisTable extends Migration
         Schema::create('pegawai', function (Blueprint $table) {
             $table->id();
             $table->string('code', 50);
-            $table->integer('ruangan_id');
-            $table->integer('shift_id');
-            $table->string('nik_pegawai', 100)->nullable();
-            $table->string('nama_pegawai', 255);
+            $table->integer('idDivisi');
+            $table->integer('statusShift')->default(0);
+            $table->integer('idJamKerjaShift')->nullable();
+            $table->string('nik', 100)->nullable();
+            $table->string('nama', 255);
             $table->string('gender', 10);
             $table->string('status', 20);
-            $table->string('telepon_pegawai', 20)->nullable();
-            $table->mediumText('alamat_pegawai')->nullable();
+            $table->string('telepon', 20)->nullable();
+            $table->date('tglLahir')->nullable();
+            $table->mediumText('alamat')->nullable();
             $table->mediumText('foto_pegawai')->default('default.jpg')->nullable();
             $table->timestamps();
         });

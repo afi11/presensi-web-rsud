@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\HariLibur;
-use App\Models\TipeShift;
+use App\Models\Divisi;
 
 class HariLiburController extends Controller
 {
@@ -20,10 +20,12 @@ class HariLiburController extends Controller
         $validate_data = $this->validate(
             $request,
             [
-                'tanggal_libur' => 'required'
+                'tanggalLibur' => 'required',
+                'idDivisi' => 'required'
             ],
             [
-                'tanggal_libur.required' => 'Tanggal libur harus diisi'
+                'tanggalLibur.required' => 'Tanggal libur harus diisi',
+                'idDivisi.required' => 'Divisi harus diisi'
             ]
         );
         return $validate_data;
@@ -31,8 +33,8 @@ class HariLiburController extends Controller
 
     public function index()
     {
-        $hariLibur = HariLibur::leftJoin('tipe_shift', 'tipe_shift.id', '=', 'hari_libur.shift_id')
-            ->select('tipe_shift.nama_shift','hari_libur.*')->get();
+        $hariLibur = HariLibur::leftJoin('divisi', 'divisi.id', '=', 'hari_libur.idDivisi')
+            ->select('divisi.namaDivisi','hari_libur.*')->get();
         return view('pages.harilibur.index', compact('hariLibur'));
     }
 
@@ -45,8 +47,8 @@ class HariLiburController extends Controller
     {
         $page = "Tambah Hari Libur";
         $isEdit = false;
-        $shift = TipeShift::all();
-        return view('pages.harilibur.create_edit', compact('page', 'isEdit', 'shift'));
+        $divisi = Divisi::all();
+        return view('pages.harilibur.create_edit', compact('page', 'isEdit', 'divisi'));
     }
 
     /**
@@ -83,9 +85,9 @@ class HariLiburController extends Controller
     {
         $page = "Edit Hari Libur";
         $isEdit = true;
-        $shift = TipeShift::all();
+        $divisi = Divisi::all();
         $hariLibur = HariLibur::find($id);
-        return view('pages.harilibur.create_edit', compact('page', 'isEdit', 'shift', 'hariLibur'));
+        return view('pages.harilibur.create_edit', compact('page', 'isEdit', 'divisi', 'hariLibur'));
     }
 
     /**
@@ -99,8 +101,8 @@ class HariLiburController extends Controller
     {
         $this->validation($request);
         $hariLibur = HariLibur::find($id);
-        $hariLibur->tanggal_libur = $request->tanggal_libur;
-        $hariLibur->shift_id = $request->shift_id;
+        $hariLibur->tanggalLibur = $request->tanggal_libur;
+        $hariLibur->idDivisi = $request->idDivisi;
         $hariLibur->keterangan = $request->keterangan;
         $hariLibur->save();
         return redirect('harilibur')->with('success','Berhasil Mengubah Data Hari libur');

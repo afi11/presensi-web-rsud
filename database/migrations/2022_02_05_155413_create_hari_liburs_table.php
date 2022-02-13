@@ -15,8 +15,8 @@ class CreateHariLibursTable extends Migration
     {
         Schema::create('hari_libur', function (Blueprint $table) {
             $table->id();
-            $table->date('tanggal_libur');
-            $table->integer('shift_id')->nullable();
+            $table->date('tanggalLibur');
+            $table->integer('idDivisi')->nullable();
             $table->mediumText('keterangan')->nullable();
             $table->timestamps();
         });

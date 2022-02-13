@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pegawai;
 use App\Models\User;
-use App\Models\Ruangan;
-use App\Models\TipeShift;
+use App\Models\Divisi;
+use App\Models\WaktuKerjaShift;
+use App\Models\WaktuReguler;
 
 class PegawaiController extends Controller
 {
@@ -22,16 +23,16 @@ class PegawaiController extends Controller
         $validate_data = $this->validate(
             $request,
             [
-                'ruangan_id' => 'required',
-                'shift_id' => 'required',
-                'nama_pegawai' => 'required',
+                'idDivisi' => 'required',
+                'statusShift' => 'required',
+                'nama' => 'required',
                 'username' => 'required',
                 'password' => 'required',
             ],
             [
-                'ruangan_id.required' => 'Nama ruangan harus diisi',
-                'shift_id.required' => 'Shift pegawai harus diisi',
-                'nama_pegawai.required' => 'Nama pegawai harus diisi',
+                'idDivisi.required' => 'Nama divisi harus diisi',
+                'statusShift.required' => 'Status Shift pegawai harus diisi',
+                'nama.required' => 'Nama pegawai harus diisi',
                 'username.required' => 'Username pegawai harus diisi',
                 'password.required' => 'Password pegawai harus diisi',
             ]
@@ -44,15 +45,17 @@ class PegawaiController extends Controller
         $validate_data = $this->validate(
             $request,
             [
-                'ruangan_id' => 'required',
+                'idDivisi' => 'required',
                 'shift_id' => 'required',
-                'nama_pegawai' => 'required',
+                'statusShift' => 'required',
+                'nama' => 'required',
                 'username' => 'required',
             ],
             [
-                'ruangan_id.required' => 'Nama ruangan harus diisi',
+                'idDivisi.required' => 'Nama divisi harus diisi',
                 'shift_id.required' => 'Shift pegawai harus diisi',
-                'nama_pegawai.required' => 'Nama pegawai harus diisi',
+                'statusShift.required' => 'Status Shift pegawai harus diisi',
+                'nama.required' => 'Nama pegawai harus diisi',
                 'username.required' => 'Username pegawai harus diisi',
             ]
         );
@@ -62,9 +65,8 @@ class PegawaiController extends Controller
     public function index()
     {
         $pegawai = Pegawai::join('users', 'users.pegawai_code', '=', 'pegawai.code')
-            ->join('ruangan', 'ruangan.id', '=', 'pegawai.ruangan_id')
-            ->join('tipe_shift', 'tipe_shift.id', '=', 'pegawai.shift_id')
-            ->select('users.username', 'ruangan.nama_ruangan', 'tipe_shift.nama_shift', 'pegawai.*')
+            ->join('divisi', 'divisi.id', '=', 'pegawai.idDivisi')
+            ->select('users.username', 'divisi.namaDivisi', 'pegawai.*')
             ->get();
         return view('pages.pegawai.index', compact('pegawai'));
     }
@@ -78,8 +80,8 @@ class PegawaiController extends Controller
     {
         $page = "Tambah Pegawai";
         $isEdit = false;
-        $ruangan = Ruangan::all();
-        $shift = TipeShift::all();
+        $ruangan = Divisi::all();
+        $shift = WaktuKerjaShift::all();
         return view('pages.pegawai.create_edit', compact('page', 'isEdit', 'ruangan', 'shift'));
     }
 
@@ -145,8 +147,8 @@ class PegawaiController extends Controller
     {
         $page = "Edit Pegawai";
         $isEdit = true;
-        $ruangan = Ruangan::all();
-        $shift = TipeShift::all();
+        $ruangan = Divisi::all();
+        $shift = WaktuKerjaShift::all();
         $pegawai = Pegawai::join('users', 'users.pegawai_code', '=', 'pegawai.code')
             ->where('pegawai.id', $id)
             ->select('pegawai.*','users.username','users.email')
@@ -165,14 +167,14 @@ class PegawaiController extends Controller
     {
         $this->validation2($request);
         $pegawai = Pegawai::find($id);
-        $pegawai->nik_pegawai = $request->nik_pegawai;
-        $pegawai->nama_pegawai = $request->nama_pegawai;
-        $pegawai->ruangan_id = $request->ruangan_id;
-        $pegawai->shift_id = $request->shift_id;
+        $pegawai->nik = $request->nik;
+        $pegawai->nama = $request->nama;
+        $pegawai->idDivisi = $request->idDivisi;
+        $pegawai->statusShift = $request->statusShift;
         $pegawai->gender = $request->gender;
-        $pegawai->telepon_pegawai = $request->telepon_pegawai;
-        $pegawai->alamat_pegawai = $request->alamat_pegawai;
-        $pegawai->nik_pegawai = $request->nik_pegawai;
+        $pegawai->telepon = $request->telepon;
+        $pegawai->tglLahir = $request->tglLahir;
+        $pegawai->alamat = $request->alamat;
         if($request->foto_pegawai != ""){
             $resorce = $request->file('foto_pegawai');
             $fileName = time().$resorce->getClientOriginalName();

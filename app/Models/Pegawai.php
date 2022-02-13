@@ -11,15 +11,16 @@ class Pegawai extends Model
     protected $table = 'pegawai';
     protected $fillable = [
         "code",
-        "ruangan_id",
-        "shift_id",
-        "nik_pegawai",
-        "nama_pegawai",
+        "idDivisi",
+        "statusShift",
+        "idJamKerjaShift",
+        "nik",
+        "nama",
         "gender",
-        "tanggal_lahir",
+        "tglLahir",
         "status",
-        "telepon_pegawai",
-        "alamat_pegawai",
+        "telepon",
+        "alamat",
         "foto_pegawai"
     ];
 }

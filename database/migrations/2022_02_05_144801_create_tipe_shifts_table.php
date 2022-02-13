@@ -13,11 +13,10 @@ class CreateTipeShiftsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tipe_shift', function (Blueprint $table) {
+        Schema::create('jam_kerja', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_shift', 50);
-            $table->time('jam_masuk');
-            $table->time('jam_pulang');
+            $table->string('namaProfile', 50);
+            $table->integer('reguler', 2);
             $table->timestamps();
         });
     }

@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\DashboardController;
-use App\Http\Controllers\Web\ShiftController;
-use App\Http\Controllers\Web\RuanganController;
+use App\Http\Controllers\Web\WaktuKerjaShiftController;
+use App\Http\Controllers\Web\WaktuRegulerController;
+use App\Http\Controllers\Web\DivisiController;
 use App\Http\Controllers\Web\PegawaiController;
 use App\Http\Controllers\Web\HariLiburController;
 use App\Http\Controllers\Web\JadwalController;
+use App\Http\Controllers\Web\RuleTelatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +22,14 @@ use App\Http\Controllers\Web\JadwalController;
 */
 
 Route::get('dashboard', [DashboardController::class, 'index']);
-Route::resource('shift', ShiftController::class);
-Route::resource('ruangan', RuanganController::class);
+Route::resource('jam_kerja_shift', WaktuKerjaShiftController::class);
+Route::get('create_jam_kerja_shift/{id}', [WaktuKerjaShiftController::class, 'createJamKerja']);
+Route::put('store_shift_jam_kerja/{id}', [WaktuKerjaShiftController::class, 'storeJamKerja']);
+Route::resource('waktu_reguler', WaktuRegulerController::class);
+Route::resource('ruangan', DivisiController::class);
 Route::resource('pegawai', PegawaiController::class);
 Route::resource('harilibur', HariLiburController::class);
+Route::resource('ruletelat', RuleTelatController::class);
 
 Route::get('jadwal', [JadwalController::class, 'index']);
 Route::get('import_jadwal/{id}', [JadwalController::class, 'create']);

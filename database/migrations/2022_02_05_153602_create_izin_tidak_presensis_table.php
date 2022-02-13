@@ -13,15 +13,15 @@ class CreateIzinTidakPresensisTable extends Migration
      */
     public function up()
     {
-        Schema::create('izin_tidak_presensi', function (Blueprint $table) {
-            $table->id();
-            $table->integer('pegawai_code');
-            $table->integer('jadwal_id');
-            $table->date('tanggal_presensi');
-            $table->string('tipe_presensi', 20);
-            $table->string('file_izin')->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('izin_tidak_presensi', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->integer('pegawai_code');
+        //     $table->integer('jadwal_id');
+        //     $table->date('tanggal_presensi');
+        //     $table->string('tipe_presensi', 20);
+        //     $table->string('file_izin')->nullable();
+        //     $table->timestamps();
+        // });
     }
 
     /**

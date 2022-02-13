@@ -13,15 +13,15 @@ class CreateCutiTidakHadirsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cuti', function (Blueprint $table) {
-            $table->id();
-            $table->integer('pegawai_code');
-            $table->date('cuti_mulai');
-            $table->date('cuti_akhir');
-            $table->string('file_surat');
-            $table->string('approved', 1)->default('Y');
-            $table->timestamps();
-        });
+        // Schema::create('cuti', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->integer('pegawai_code');
+        //     $table->date('cuti_mulai');
+        //     $table->date('cuti_akhir');
+        //     $table->string('file_surat');
+        //     $table->string('approved', 1)->default('Y');
+        //     $table->timestamps();
+        // });
     }
 
     /**

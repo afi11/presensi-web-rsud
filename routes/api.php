@@ -28,4 +28,6 @@ Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
 Route::group(['middleware' => 'api'], function ($router) {
     // Presensi
     Route::get('fetch-time-presensi', [PresensiController::class, 'fetchTime']);
+    Route::post('send-presensi', [PresensiController::class, 'sendPresensi']);
+    Route::get('fetch-history-presensi', [PresensiController::class, 'fetchHistoryPresensi']);
 });

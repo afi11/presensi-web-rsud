@@ -1,32 +1,45 @@
 <?php
 
 use App\Models\Presensi;
+use App\Models\RuleTelat;
 
-function cekPresensiMasuk($pegawaiCode, $tanggal) 
+function cekPresensiMasuk($pegawaiCode) 
 {
-    $count = Presensi::where('pegawai_code', $pegawaiCode)
-        ->where('tanggal_presensi', $tanggal)
-        ->where('presensi_masuk', '<>', null)
-        ->count();
-    if ($count > 0){
-        $state = "Sudah";
-    }else{
-        $state = "Belum";
-    }
-    return $state;
+    $masuk = Presensi::where('pegawaiCode', $pegawaiCode)
+        ->where('tipePresensi', 'jam-masuk')
+        ->orderBy('created_at', 'DESC')
+        ->first();
+    return $masuk;
 }
 
 
-function cekPresensiPulang($pegawaiCode, $tanggal) 
+function cekPresensiPulang($pegawaiCode, $activityCode) 
 {
-    $count = Presensi::where('pegawai_code', $pegawaiCode)
-        ->where('tanggal_presensi', $tanggal)
-        ->where('presensi_pulang', '<>', null)
-        ->count();
-    if ($count > 0){
-        $state = "Sudah";   
-    }else{
-        $state = "Belum";
+    $pulang = Presensi::where('pegawaiCode', $pegawaiCode)
+        ->where('tipePresensi', 'jam-pulang')
+        ->where('activityCode', $activityCode)
+        ->where('statusPresensiPulang', 1)
+        ->orderBy('created_at', 'DESC')
+        ->first();
+    return $pulang;
+}
+
+function getStatusTelat($tipePresensi, $nTelat)
+{
+    $ruleTelat = RuleTelat::all();
+    $idRuleTelat = 0;
+    foreach($ruleTelat as $row){
+        if($tipePresensi == 'jam-masuk'){
+            if($nTelat <= $row->maxTelatMasuk){
+                $idRuleTelat = $row->id;
+                break;
+            }
+        }else if($tipePresensi == 'jam-pulang'){
+            if($nTelat <= $row->maxTelatPulang){
+                $idRuleTelat = $row->id;
+                break;
+            }
+        }
     }
-    return $state;
+    return $idRuleTelat;
 }

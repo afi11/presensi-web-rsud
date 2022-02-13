@@ -30,7 +30,7 @@
                 <tr>
                     <th>No</th>
                     <th>Tanggal Libur</th>
-                    <th>Shift</th>
+                    <th>Divisi</th>
                     <th>Keterangan</th>
                     <th>Aksi</th>
                 </tr>
@@ -42,7 +42,7 @@
                 <tr>
                     <td>{{ $no }}</td>
                     <td>{{ $row->tanggal_libur }}</td>
-                    <td>{{ $row->nama_shift != "" ? $row->nama_shift : "Semua" }}</td>
+                    <td>{{ $row->namaDivisi != "" ? $row->namaDivisi : "Semua" }}</td>
                     <td>{{ $row->keterangan }}</td>
                     <td>
                         <a href="{{ route('harilibur.edit', $row->id) }}"

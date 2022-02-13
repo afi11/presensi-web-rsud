@@ -29,11 +29,18 @@
                         <a @if(Request::segment(1) == 'ruangan') class="active" @endif href="{{ url('ruangan') }}">Ruangan</a>
                     </li>
                     <li>
-                        <a @if(Request::segment(1) == 'shift') class="active" @endif href="{{ url('shift') }}">Shift</a>
+                        <a @if(Request::segment(1) == 'waktu_reguler') class="active" @endif href="{{ url('waktu_reguler') }}">Jam Kerja Reguler</a>
+                    </li>
+                    <li>
+                        <a @if(Request::segment(1) == 'jam_kerja_shift') class="active" @endif href="{{ url('jam_kerja_shift') }}">Jam Kerja Shift</a>
+                    </li>
+                    <li>
+                        <a @if(Request::segment(1) == 'ruletelat') class="active" @endif href="{{ url('ruletelat') }}">Rule Telat</a>
                     </li>
                     <li>
                         <a @if(Request::segment(1) == 'harilibur') class="active" @endif href="{{ url('harilibur') }}">Hari Libur</a>
                     </li>
+
                 </ul>
             </li>
             <li>
