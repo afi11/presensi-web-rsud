@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Pegawai;
 use Validator;
 
 class AuthController extends Controller
@@ -65,5 +66,15 @@ class AuthController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => auth()->user()
         ]);
+    }
+
+    public function getProfil(Request $request)
+    {
+        $pegawaiCode = $request->pegawaiCode;
+        $pegawai = Pegawai::join('divisi', 'divisi.id', '=', 'pegawai.idDivisi')
+            ->where('code', $pegawaiCode)
+            ->select('pegawai.*', 'divisi.namaDivisi')
+            ->first();
+        return response()->json(["code" => 200, "data" => $pegawai]);
     }
 }

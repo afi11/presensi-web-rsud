@@ -21,6 +21,7 @@ class Pegawai extends Model
         "status",
         "telepon",
         "alamat",
+        "jabatan",
         "foto_pegawai"
     ];
 }

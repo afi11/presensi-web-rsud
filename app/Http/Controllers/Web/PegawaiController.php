@@ -9,6 +9,9 @@ use App\Models\User;
 use App\Models\Divisi;
 use App\Models\WaktuKerjaShift;
 use App\Models\WaktuReguler;
+use App\Imports\ImportPegawai;
+use Maatwebsite\Excel\Facades\Excel;
+use DB;
 
 class PegawaiController extends Controller
 {
@@ -26,15 +29,11 @@ class PegawaiController extends Controller
                 'idDivisi' => 'required',
                 'statusShift' => 'required',
                 'nama' => 'required',
-                'username' => 'required',
-                'password' => 'required',
             ],
             [
                 'idDivisi.required' => 'Nama divisi harus diisi',
                 'statusShift.required' => 'Status Shift pegawai harus diisi',
                 'nama.required' => 'Nama pegawai harus diisi',
-                'username.required' => 'Username pegawai harus diisi',
-                'password.required' => 'Password pegawai harus diisi',
             ]
         );
         return $validate_data;
@@ -46,14 +45,12 @@ class PegawaiController extends Controller
             $request,
             [
                 'idDivisi' => 'required',
-                'shift_id' => 'required',
                 'statusShift' => 'required',
                 'nama' => 'required',
                 'username' => 'required',
             ],
             [
                 'idDivisi.required' => 'Nama divisi harus diisi',
-                'shift_id.required' => 'Shift pegawai harus diisi',
                 'statusShift.required' => 'Status Shift pegawai harus diisi',
                 'nama.required' => 'Nama pegawai harus diisi',
                 'username.required' => 'Username pegawai harus diisi',
@@ -64,8 +61,8 @@ class PegawaiController extends Controller
 
     public function index()
     {
-        $pegawai = Pegawai::join('users', 'users.pegawai_code', '=', 'pegawai.code')
-            ->join('divisi', 'divisi.id', '=', 'pegawai.idDivisi')
+        $pegawai = Pegawai::leftJoin('users', 'users.pegawai_code', '=', 'pegawai.code')
+            ->leftJoin('divisi', 'divisi.id', '=', 'pegawai.idDivisi')
             ->select('users.username', 'divisi.namaDivisi', 'pegawai.*')
             ->get();
         return view('pages.pegawai.index', compact('pegawai'));
@@ -93,36 +90,38 @@ class PegawaiController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validation($request);
-        $kodePegawai = genKodePegawai();
-        if($request->file('foto_pegawai') != ""){
-            $resorce = $request->file('foto_pegawai');
-            $fileName = time().$resorce->getClientOriginalName();
-            $resorce->move(\base_path() ."/public/assets/img/users", $fileName);
-        }else{
-            if($request->gender == "MALE"){
-                $fileName = "male.png";
-            }else if($request->gender == "FEMALE"){
-                $fileName = "female.png";
+        //$this->validation($request);
+        DB::transaction(function() use ($request) {
+            $kodePegawai = genKodePegawai();
+            if($request->file('foto_pegawai') != ""){
+                $resorce = $request->file('foto_pegawai');
+                $fileName = time().$resorce->getClientOriginalName();
+                $resorce->move(\base_path() ."/public/assets/img/users", $fileName);
             }else{
-                $fileName = "default.jpg";
+                if($request->gender == "L"){
+                    $fileName = "male.png";
+                }else if($request->gender == "P"){
+                    $fileName = "female.png";
+                }else{
+                    $fileName = "default.jpg";
+                }
             }
-        }
-        Pegawai::create($request->except(['code', 'foto_pegawai', 'status'])+[
-            "code" => $kodePegawai,
-            "foto_pegawai" => $fileName,
-            "status" => "kontrak",
-        ]);
+            Pegawai::create($request->except(['code', 'foto_pegawai', 'status'])+[
+                "code" => $kodePegawai,
+                "foto_pegawai" => $fileName,
+                "status" => "kontrak",
+            ]);
 
-        User::create([
-            "pegawai_code" => $kodePegawai,
-            "username" => $request->username,
-            "email" => $request->email,
-            "password" => bcrypt($request->password),
-            "password_hint" => $request->password,
-            "role" => "pegawai",
-        ]);
-
+            User::create([
+                "pegawai_code" => $kodePegawai,
+                "username" => $kodePegawai,
+                "email" => $request->email,
+                "password" => bcrypt($kodePegawai),
+                "password_hint" => 'Default Sama dengan kode pegawai',
+                "role" => "pegawai",
+            ]);
+        });
+        //return response()->json(["kode" => $kodePegawai]);
         return redirect('pegawai')->with('success','Berhasil Menambah Data Pegawai');
     }
 
@@ -149,7 +148,7 @@ class PegawaiController extends Controller
         $isEdit = true;
         $ruangan = Divisi::all();
         $shift = WaktuKerjaShift::all();
-        $pegawai = Pegawai::join('users', 'users.pegawai_code', '=', 'pegawai.code')
+        $pegawai = Pegawai::leftJoin('users', 'users.pegawai_code', '=', 'pegawai.code')
             ->where('pegawai.id', $id)
             ->select('pegawai.*','users.username','users.email')
             ->first();
@@ -165,11 +164,12 @@ class PegawaiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validation2($request);
+        //$this->validation2($request);
         $pegawai = Pegawai::find($id);
         $pegawai->nik = $request->nik;
         $pegawai->nama = $request->nama;
         $pegawai->idDivisi = $request->idDivisi;
+        $pegawai->idJamKerjaShift = $request->idJamKerjaShift;
         $pegawai->statusShift = $request->statusShift;
         $pegawai->gender = $request->gender;
         $pegawai->telepon = $request->telepon;
@@ -187,12 +187,12 @@ class PegawaiController extends Controller
         $pegawai->save();
         
         $user = User::where('pegawai_code', $pegawai->code)->first();
-        $user->username = $request->username;
+        //$user->username = $request->username;
         $user->email = $request->email;
-        if($request->password != ""){
-            $user->password = bcrypt($request->password);
-            $user->password_hint = $request->password;
-        }
+        //if($request->password != ""){
+            // $user->password = bcrypt($request->password);
+            // $user->password_hint = $request->password;
+       // }
         $user->save();
         return redirect('pegawai')->with('success','Berhasil Mengubah Data Pegawai');
     }
@@ -212,5 +212,11 @@ class PegawaiController extends Controller
         // }
         $pegawai->delete();
         return redirect('pegawai')->with('success','Berhasil Menghapus Data Pegawai');
+    }
+
+    public function import(Request $request)
+    {
+        $import = Excel::import(new ImportPegawai(), $request->file('data_pegawai'));
+        return redirect('pegawai')->with('success','Berhasil Mengimport data pegawai');
     }
 }

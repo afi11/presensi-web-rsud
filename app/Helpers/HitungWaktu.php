@@ -51,3 +51,8 @@ function getHourFromDateTime($dateTime) {
     $time = new DateTime($dateTime);
     return $time->format('H');
 }
+
+function hitungJumlahHari($bulan, $tahun) {
+    $jumlahHari = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
+    return $jumlahHari;
+}

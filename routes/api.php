@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Mobile\AuthController;
 use App\Http\Controllers\Mobile\PresensiController;
+use App\Http\Controllers\Mobile\IzinController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,7 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::get('fetch-time-presensi', [PresensiController::class, 'fetchTime']);
     Route::post('send-presensi', [PresensiController::class, 'sendPresensi']);
     Route::get('fetch-history-presensi', [PresensiController::class, 'fetchHistoryPresensi']);
+    Route::get('fetch-profil', [AuthController::class, 'getProfil']);
+    Route::get('fetch-rule-izin', [IzinController::class, 'fetchRuleIzin']);
+    Route::post('send-izin', [IzinController::class, 'sendIzin']);
 });

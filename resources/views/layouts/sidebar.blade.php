@@ -48,10 +48,10 @@
                     <span class="nav-label">Presensi</span><i class="fa fa-angle-left arrow"></i></a>
                 <ul class="nav-2-level collapse in">
                     <li>
-                        <a @if(Request::segment(1) == 'jadwal') class="active" @endif href="{{ url('jadwal') }}">Jadwal</a>
+                        <a @if(Request::segment(1) == 'view_sinkronisasi_presensi') class="active" @endif href="{{ url('view_sinkronisasi_presensi') }}">Sinkronisasi</a>
                     </li>
                     <li>
-                        <a href="form_advanced.html">Hasil Presensi</a>
+                        <a @if(Request::segment(1) == 'riwayat_presensi') class="active" @endif href="{{ url('riwayat_presensi') }}">Hasil Presensi</a>
                     </li>
                     <li>
                         <a href="form_masks.html">Cuti</a>

@@ -47,16 +47,16 @@
                         <label>Gender</label>
                         <div>
                             <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="customRadioInline1" value="MALE" name="gender"
-                                    class="custom-control-input" @if($isEdit) @if($pegawai->gender == "MALE")
+                                <input type="radio" id="customRadioInline1" value="L" name="gender"
+                                    class="custom-control-input" @if($isEdit) @if($pegawai->gender == "L")
                                 checked
                                 @endif
                                 @endif>
                                 <label class="custom-control-label" for="customRadioInline1">Pria</label>
                             </div>
                             <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="customRadioInline2" value="FEMALE" name="gender"
-                                    class="custom-control-input" @if($isEdit) @if($pegawai->gender == "FEMALE")
+                                <input type="radio" id="customRadioInline2" value="P" name="gender"
+                                    class="custom-control-input" @if($isEdit) @if($pegawai->gender == "P")
                                 checked
                                 @endif
                                 @endif>
@@ -77,7 +77,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
                     <div class="form-group">
                         <label>Username</label>
                         <input class="form-control  @error('username') is-invalid @enderror" name="username" type="text"
@@ -88,7 +88,7 @@
                         </div>
                         @enderror
                     </div>
-                </div>
+                </div> -->
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Email</label>
@@ -101,7 +101,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
                     <div class="form-group">
                         <label>Password</label>
                         <input class="form-control  @error('password') is-invalid @enderror" name="password"
@@ -112,7 +112,7 @@
                         </div>
                         @enderror
                     </div>
-                </div>
+                </div> -->
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Shift Pegawai</label>

@@ -6,7 +6,7 @@ use App\Models\RuleTelat;
 function cekPresensiMasuk($pegawaiCode) 
 {
     $masuk = Presensi::where('pegawaiCode', $pegawaiCode)
-        ->where('tipePresensi', 'jam-masuk')
+        ->where('statusPresensi', 0)
         ->orderBy('created_at', 'DESC')
         ->first();
     return $masuk;
@@ -16,12 +16,19 @@ function cekPresensiMasuk($pegawaiCode)
 function cekPresensiPulang($pegawaiCode, $activityCode) 
 {
     $pulang = Presensi::where('pegawaiCode', $pegawaiCode)
-        ->where('tipePresensi', 'jam-pulang')
         ->where('activityCode', $activityCode)
-        ->where('statusPresensiPulang', 1)
+        ->where('statusPresensi', 1)
         ->orderBy('created_at', 'DESC')
         ->first();
     return $pulang;
+}
+
+function getLatestPresensi($pegawaiCode)
+{
+    $presensi = Presensi::where('pegawaiCode', $pegawaiCode)
+        ->orderBy('created_at', 'DESC')
+        ->first();
+    return $presensi;
 }
 
 function getStatusTelat($tipePresensi, $nTelat)
@@ -42,4 +49,17 @@ function getStatusTelat($tipePresensi, $nTelat)
         }
     }
     return $idRuleTelat;
+}
+
+function crosCekPresensi($kode)
+{
+    $presensi = Presensi::where('activityCode', $kode)->first();
+    if($presensi->waktuShift == 'PAGI'){
+        $waktu = 'P';
+    }else if($presensi->waktuShift == 'SIANG'){
+        $waktu = 'S';
+    }else{
+        $waktu = 'M';
+    }
+    return $waktu;
 }
