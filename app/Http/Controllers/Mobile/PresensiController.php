@@ -119,6 +119,12 @@ class PresensiController extends Controller
         }else{
             $waktuPresensi = [];
         }
+        if(cekIzin($request->pegawaiCode)){
+            $isAblePresensi = false;
+        }
+        // if(cekLibur($request->pegawaiCode)){
+        //     $isAblePresensi = false;
+        // }
         return response()->json([
             "code" => 200, 
             "isAblePresensi" => $isAblePresensi,
@@ -182,7 +188,7 @@ class PresensiController extends Controller
             $presensi->pegawaiCode = $request->pegawaiCode;
             if($tipeWaktu == 'shift'){
                 $presensi->idWaktuShift = $request->idWaktu;
-                $presensi->waktuShift = $request->waktuShift;
+                $presensi->tipeWaktu = $request->waktuShift;
             }else{
                 $presensi->idWaktuReguler = $request->idWaktu;
             }
@@ -214,6 +220,7 @@ class PresensiController extends Controller
             }else{
                 PresensiCroscheck::create([
                     "pegawaiCode" => $request->pegawaiCode,
+                    "idDivisi" => getRuanganId($request->pegawaiCode),
                     "bulan" => $bulan,
                     "tahun" => $tahun,
                     $fieldTanggal => $kodePresensi
@@ -225,6 +232,26 @@ class PresensiController extends Controller
         ]);
     }
 
+    public function fetchAllHistoryPresensi(Request $request)
+    {
+        if($request->tglAwal != "" && $request->tglAkhir != ""){
+            $presensi = Presensi::where('pegawaiCode', $request->pegawaiCode)
+                ->whereBetween('tanggalPresensi', [
+                    $request->tglAwal,  $request->tglAkhir
+                ])
+                ->where('tanggalPresensi', '<>', null)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }else{
+            $presensi = Presensi::where('pegawaiCode', $request->pegawaiCode)
+                ->whereYear('created_at', Carbon::now()->format('Y'))
+                ->where('tanggalPresensi', '<>', null)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+        return response()->json(["code" => 200, "data" => $presensi]);
+    }
+
     public function fetchHistoryPresensi(Request $request)
     {
         $pegawaiCode = $request->pegawaiCode;
@@ -234,9 +261,11 @@ class PresensiController extends Controller
                 ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
                 ->where('idRuleTelatMasuk', '<>', null)
                 ->orWhere('idRuleLewatPulang', '<>', null)
+                ->where('tanggalPresensi', '<>', null)
                 ->count();
             $countTepat = Presensi::where('pegawaiCode', $pegawaiCode)
                 ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+                ->where('tanggalPresensi', '<>', null)
                 ->where('idRuleTelatMasuk', null)
                 ->orWhere('idRuleLewatPulang', null)
                 ->count();
@@ -244,6 +273,7 @@ class PresensiController extends Controller
                 ->whereBetween('created_at', [
                     Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()
                 ])
+                ->where('tanggalPresensi', '<>', null)
                 ->orderBy('created_at', 'desc')
                 ->get();
         }else if($filter == 'bulan'){
@@ -251,14 +281,17 @@ class PresensiController extends Controller
                 ->whereMonth('created_at', Carbon::now()->format('m'))
                 ->where('idRuleTelatMasuk', '<>', null)
                 ->orWhere('idRuleLewatPulang', '<>', null)
+                ->where('tanggalPresensi', '<>', null)
                 ->count();
             $countTepat = Presensi::where('pegawaiCode', $pegawaiCode)
                 ->whereMonth('created_at', Carbon::now()->format('m'))
                 ->where('idRuleTelatMasuk', null)
                 ->orWhere('idRuleLewatPulang', null)
+                ->where('tanggalPresensi', '<>', null)
                 ->count();
             $presensi = Presensi::where('pegawaiCode', $pegawaiCode)
                 ->whereMonth('created_at', Carbon::now()->format('m'))
+                ->where('tanggalPresensi', '<>', null)
                 ->orderBy('created_at', 'desc')
                 ->get();
         }

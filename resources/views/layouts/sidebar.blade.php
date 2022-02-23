@@ -1,11 +1,8 @@
 <nav class="page-sidebar" id="sidebar">
     <div id="sidebar-collapse">
         <div class="admin-block d-flex">
-            <div>
-                <img src="./assets/img/admin-avatar.png" width="45px" />
-            </div>
             <div class="admin-info">
-                <div class="font-strong">James Brown</div><small>Administrator</small>
+                <div class="font-strong">{{ Session::get('username') }}</div><small>{{ Session::get('role') }}</small>
             </div>
         </div>
         <ul class="side-menu metismenu">
@@ -20,7 +17,7 @@
                     <span class="nav-label">Data Master</span><i class="fa fa-angle-down arrow"></i></a>
                 <ul class="nav-2-level collapse in">
                     <li>
-                        <a href="colors.html">Pengguna</a>
+                        <a @if(Request::segment(1) == 'pengguna') class="active" @endif href="{{ url('pengguna') }}">Pengguna</a>
                     </li>
                     <li>
                         <a @if(Request::segment(1) == 'pegawai') class="active" @endif href="{{ url('pegawai') }}">Pegawai</a>
@@ -37,9 +34,9 @@
                     <li>
                         <a @if(Request::segment(1) == 'ruletelat') class="active" @endif href="{{ url('ruletelat') }}">Rule Telat</a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a @if(Request::segment(1) == 'harilibur') class="active" @endif href="{{ url('harilibur') }}">Hari Libur</a>
-                    </li>
+                    </li> -->
 
                 </ul>
             </li>
@@ -48,7 +45,7 @@
                     <span class="nav-label">Presensi</span><i class="fa fa-angle-left arrow"></i></a>
                 <ul class="nav-2-level collapse in">
                     <li>
-                        <a @if(Request::segment(1) == 'view_sinkronisasi_presensi') class="active" @endif href="{{ url('view_sinkronisasi_presensi') }}">Sinkronisasi</a>
+                        <a @if(Request::segment(1) == 'sinkronisasi') class="active" @endif href="{{ url('sinkronisasi') }}">Sinkronisasi</a>
                     </li>
                     <li>
                         <a @if(Request::segment(1) == 'riwayat_presensi') class="active" @endif href="{{ url('riwayat_presensi') }}">Hasil Presensi</a>

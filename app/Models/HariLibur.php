@@ -9,5 +9,11 @@ class HariLibur extends Model
 {
     use HasFactory;
     protected $table = "hari_libur";
-    protected $fillable = ["tanggalLibur", "idDivisi", "keterangan"];
+    protected $fillable = [
+        "tanggalMulaiLibur", 
+        "tanggalSelesaiLibur",
+        "forlibur",
+        "status",
+        "keterangan"
+    ];
 }

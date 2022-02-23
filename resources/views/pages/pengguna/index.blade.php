@@ -1,21 +1,21 @@
 @extends('layouts.main')
-@section('title','Halaman Kelola Shift')
+@section('title','Halaman Kelola Pengguna')
 @section('content')
 <div class="page-heading">
-    <h1 class="page-title">Kelola Hari Libur</h1>
+    <h1 class="page-title">Kelola Pengguna</h1>
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
             <a href="{{ url()->previous() }}"><i class="la la-home font-20"></i></a>
         </li>
-        <li class="breadcrumb-item">Kelola Hari Libur</li>
+        <li class="breadcrumb-item">Kelola Pengguna</li>
     </ol>
 </div>
 <div class="ibox mt-3">
     <div class="ibox-head">
-        <div class="ibox-title">Data Hari Libur</div>
+        <div class="ibox-title">Data Pengguna</div>
     </div>
     <div class="ibox-body">
-        <a href="{{ route('harilibur.create') }}" class="btn btn-success mb-3 text-white"><span class="fa fa-plus"></span>
+        <a href="{{ route('pengguna.create') }}" class="btn btn-success mb-3 text-white"><span class="fa fa-plus"></span>
             Tambah Data</a>
         @if(Session::has('success'))
         <div class="alert alert-dismissible fade show alert-success" role="alert">
@@ -29,26 +29,23 @@
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Tanggal Mulai Libur</th>
-                    <th>Tanggal Selesai Libur</th>
-                    <th>Tipe Pegawai</th>
-                    <th>Keterangan</th>
+                    <th>Username</th>
+                    <th>Password Hint</th>
+                    <th>Role</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @php $no = 0; @endphp
-                @foreach($hariLibur as $row)
+                @foreach($pengguna as $row)
                 @php $no++; @endphp
                 <tr>
                     <td>{{ $no }}</td>
-                    <td>{{ $row->tanggalMulaiLibur }}</td>
-                    <td>{{ $row->tanggalSelesaiLibur }}</td>
-                    <td>{{ $row->forlibur }}</td>
-                    <td>{{ $row->status == 1 ? "Aktif" : "Tidak Aktif" }}</td>
-                    <td>{{ $row->keterangan }}</td>
+                    <td>{{ $row->username }}</td>
+                    <td>{{ $row->password_hint }}</td>
+                    <td>{{ $row->role }}</td>
                     <td>
-                        <a href="{{ route('harilibur.edit', $row->id) }}"
+                        <a href="{{ route('pengguna.edit', $row->id) }}"
                             class="btn btn-primary btn-sm mb-3 text-white"><span class="fa fa-edit"></span> Edit</a>
                         <button data-toggle="modal" data-target="#exampleModal{{ $row->id }}" 
                             class="btn btn-danger btn-sm mb-3 text-white pointer"><span class="fa fa-trash"></span> Hapus</button>
@@ -65,12 +62,12 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                Apakah hari libur pada tanggal {{ $row->hari_libur }} akan dihapus ?
+                                Apakah pengguna {{ $row->username }} akan dihapus ?
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger btn-pill"
                                     data-dismiss="modal">Tidak</button>
-                                <form action="{{ route('harilibur.destroy', $row->id) }}" method="post">
+                                <form action="{{ route('pengguna.destroy', $row->id) }}" method="post">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-primary btn-pill">Ya</button>
@@ -79,7 +76,6 @@
                         </div>
                     </div>
                 </div>
-
                 @endforeach
             </tbody>
         </table>

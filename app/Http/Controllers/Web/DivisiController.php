@@ -29,7 +29,7 @@ class DivisiController extends Controller
 
     public function index()
     {
-        $ruangan = Divisi::all();
+        $ruangan = Divisi::where('asal', 'duk_up')->get();
         return view('pages.ruangan.index', compact('ruangan'));
     }
 

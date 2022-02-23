@@ -10,6 +10,7 @@ class Presensi extends Model
     use HasFactory;
     protected $table = "presensi";
     protected $fillable = [
+        "activityCode",
         "pegawaiCode",
         "idRuleIzin",
         "idRuleTelatMasuk",
@@ -17,7 +18,7 @@ class Presensi extends Model
         "idRuleLewatPulang",
         "idWaktuReguler",
         "idWaktuShift",
-        "waktuShift",
+        "tipeWaktu",
         "tanggalPresensi",
         "jamMasuk",
         "jamPulang",

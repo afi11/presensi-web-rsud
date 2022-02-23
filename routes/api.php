@@ -27,11 +27,15 @@ Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
 
 
 Route::group(['middleware' => 'api'], function ($router) {
+    // User
+    Route::put('update_profil/{code}', [AuthController::class, 'updateProfil']);
     // Presensi
     Route::get('fetch-time-presensi', [PresensiController::class, 'fetchTime']);
     Route::post('send-presensi', [PresensiController::class, 'sendPresensi']);
     Route::get('fetch-history-presensi', [PresensiController::class, 'fetchHistoryPresensi']);
+    Route::get('fetch-all-history-presensi', [PresensiController::class, 'fetchAllHistoryPresensi']);
     Route::get('fetch-profil', [AuthController::class, 'getProfil']);
     Route::get('fetch-rule-izin', [IzinController::class, 'fetchRuleIzin']);
     Route::post('send-izin', [IzinController::class, 'sendIzin']);
+    Route::get('fetch-histori-izin', [IzinController::class, 'fetchHistoryIzin']);
 });

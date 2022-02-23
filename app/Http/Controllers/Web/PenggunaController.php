@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\HariLibur;
-use App\Models\Divisi;
+use App\Models\User;
 
-class HariLiburController extends Controller
+class PenggunaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,14 +19,14 @@ class HariLiburController extends Controller
         $validate_data = $this->validate(
             $request,
             [
-                'tanggalMulaiLibur' => 'required',
-                'tanggalSelesaiLibur' => 'required',
-                'forlibur' => 'required'
+                'username' => 'required',
+                'password' => 'required',
+                'role' => 'required'
             ],
             [
-                'tanggalMulaiLibur.required' => 'Tanggal Mulai libur harus diisi',
-                'tanggalSelesaiLibur.required' => 'Tanggal Selesai libur harus diisi',
-                'forlibur.required' => 'Tipe pegawai harus diisi'
+                'username.required' => 'Username harus diisi',
+                'password.required' => 'Password harus diisi',
+                'role.required' => 'Role harus diisi'
             ]
         );
         return $validate_data;
@@ -35,8 +34,8 @@ class HariLiburController extends Controller
 
     public function index()
     {
-        $hariLibur = HariLibur::where('status', 1)->get();
-        return view('pages.harilibur.index', compact('hariLibur'));
+        $pengguna = User::where('role', '<>', 'pegawai')->get();
+        return view('pages.pengguna.index', compact('pengguna'));
     }
 
     /**
@@ -46,9 +45,9 @@ class HariLiburController extends Controller
      */
     public function create()
     {
-        $page = "Tambah Hari Libur";
+        $page = "Tambah Pengguna";
         $isEdit = false;
-        return view('pages.harilibur.create_edit', compact('page', 'isEdit'));
+        return view('pages.pengguna.create_edit', compact('page', 'isEdit'));
     }
 
     /**
@@ -60,8 +59,14 @@ class HariLiburController extends Controller
     public function store(Request $request)
     {
         $this->validation($request);
-        HariLibur::create($request->all());
-        return redirect('harilibur')->with('success','Berhasil Menambah Data Hari libur');
+        User::create([
+            'username' => $request->username,
+            'password' => bcrypt($request->password),
+            'password_hint' => $request->password_hint,
+            'role' => $request->role,
+            'enable_presensi' => 0
+        ]);
+        return redirect('pengguna')->with('success','Berhasil Menambah Data Pengguna');
     }
 
     /**
@@ -83,10 +88,10 @@ class HariLiburController extends Controller
      */
     public function edit($id)
     {
-        $page = "Edit Hari Libur";
+        $page = "Edit Pengguna";
         $isEdit = true;
-        $hariLibur = HariLibur::find($id);
-        return view('pages.harilibur.create_edit', compact('page', 'isEdit', 'hariLibur'));
+        $pengguna = User::find($id);
+        return view('pages.pengguna.create_edit', compact('page', 'isEdit', 'pengguna'));
     }
 
     /**
@@ -98,14 +103,15 @@ class HariLiburController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validation($request);
-        $hariLibur = HariLibur::find($id);
-        $hariLibur->tanggalMulaiLibur = $request->tanggalMulaiLibur;
-        $hariLibur->tanggalSelesaiLibur = $request->tanggalSelesaiLibur;
-        $hariLibur->forlibur = $request->forlibur;
-        $hariLibur->keterangan = $request->keterangan;
-        $hariLibur->save();
-        return redirect('harilibur')->with('success','Berhasil Mengubah Data Hari libur');
+        $pengguna = User::find($id);
+        $pengguna->username = $request->username;
+        if($request->password != $pengguna->password){
+            $pengguna->password = bcrypt($request->password);
+        }
+        $pengguna->password_hint = $request->password_hint;
+        $pengguna->role = $request->role;
+        $pengguna->save();
+        return redirect('pengguna')->with('success','Berhasil Mengubah Data Pengguna');
     }
 
     /**
@@ -116,8 +122,8 @@ class HariLiburController extends Controller
      */
     public function destroy($id)
     {
-        $hariLibur = HariLibur::find($id);
-        $hariLibur->delete();
-        return redirect('harilibur')->with('success','Berhasil Mengubah Data Hari libur');
+        $pengguna = User::find($id);
+        $pengguna->delete();
+        return redirect('pengguna')->with('success','Berhasil Mengubah Data Pengguna');
     }
 }

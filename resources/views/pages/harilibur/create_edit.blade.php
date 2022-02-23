@@ -25,11 +25,11 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Tanggal Hari Libur</label>
-                        <input class="form-control @error('tanggalLibur') is-invalid @enderror" 
-                            name="tanggalLibur" type="date" 
-                            @if($isEdit) value="{{ $hariLibur->tanggalLibur }}" @endif />
-                        @error('tanggalLibur')
+                        <label>Tanggal Mulai Hari Libur</label>
+                        <input class="form-control @error('tanggalMulaiLibur') is-invalid @enderror" 
+                            name="tanggalMulaiLibur" type="date" 
+                            @if($isEdit) value="{{ $hariLibur->tanggalMulaiLibur }}" @endif />
+                        @error('tanggalMulaiLibur')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
@@ -38,23 +38,38 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label>Nama Divisi</label>
-                        <select class="custom-select" name="idDivisi">
-                            <option value="">Pilih salah satu</option>
-                            @foreach($divisi as $row)
-                                <option value="{{ $row->id }}" 
-                                @if($isEdit) 
-                                    @if($row->id == $hariLibur->idDivisi)
-                                        selected
-                                    @endif
-                                @endif>{{ $row->namaDivisi }}</option>
-                            @endforeach
-                        </select>
-                        @error('idDivisi')
+                        <label>Tanggal Selesai Hari Libur</label>
+                        <input class="form-control @error('tanggalSelesaiLibur') is-invalid @enderror" 
+                            name="tanggalSelesaiLibur" type="date" 
+                            @if($isEdit) value="{{ $hariLibur->tanggalSelesaiLibur }}" @endif />
+                        @error('tanggalSelesaiLibur')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
                         @enderror
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="customRadioInline1" value="reguler" name="forlibur"
+                                    class="custom-control-input" @if($isEdit) @if($hariLibur->forlibur == "reguler")
+                                checked
+                                @endif
+                                @endif>
+                                <label class="custom-control-label" for="customRadioInline1">Reguler</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="customRadioInline2" value="shift" name="forlibur"
+                                    class="custom-control-input" @if($isEdit) @if($hariLibur->forlibur == "shift")
+                                checked
+                                @endif
+                                @endif>
+                                <label class="custom-control-label" for="customRadioInline2">Shift</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -71,7 +86,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="form-group">
+                    <div class="form-group mt-5">
                         <button type="submit" class="btn btn-success text-white pointer">Simpan</button>
                         <a href="{{ url()->previous() }}" class="btn btn-primary text-white pointer">Kembali</a>
                     </div>

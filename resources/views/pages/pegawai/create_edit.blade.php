@@ -68,8 +68,8 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Tanggal Lahir</label>
-                        <input class="form-control  @error('tglLahir') is-invalid @enderror" name="tglLahir"
-                            type="date" @if($isEdit) value="{{ $pegawai->tglLahir }}" @endif />
+                        <input class="form-control  @error('tglLahir') is-invalid @enderror" name="tglLahir" type="date"
+                            @if($isEdit) value="{{ $pegawai->tglLahir }}" @endif />
                         @error('tglLahir')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -117,7 +117,8 @@
                     <div class="form-group">
                         <label>Shift Pegawai</label>
                         <div>
-                            <div class="custom-control custom-radio custom-control-inline  @error('statusShift') is-invalid @enderror">
+                            <div
+                                class="custom-control custom-radio custom-control-inline  @error('statusShift') is-invalid @enderror">
                                 <input type="radio" id="customRadioInline3" name="statusShift"
                                     class="custom-control-input" value="0" @if($isEdit) @if($pegawai->statusShift == 0)
                                 checked
@@ -127,7 +128,7 @@
                             </div>
                             <div class="custom-control custom-radio custom-control-inline">
                                 <input type="radio" id="customRadioInline4" name="statusShift"
-                                    class="custom-control-input" value="1"  @if($isEdit) @if($pegawai->statusShift == 1)
+                                    class="custom-control-input" value="1" @if($isEdit) @if($pegawai->statusShift == 1)
                                 checked
                                 @endif
                                 @endif>
@@ -141,7 +142,8 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-md-4 @if(!$isEdit) hidden @endif @if($isEdit && $pegawai->idJamKerjaShift == null) hidden @endif" id="idJamKerjaShift">
+                <div class="col-md-4 @if(!$isEdit) hidden @endif @if($isEdit && $pegawai->idJamKerjaShift == null) hidden @endif"
+                    id="idJamKerjaShift">
                     <div class="form-group">
                         <label>Shift Jam Kerja</label>
                         <select class="custom-select" name="idJamKerjaShift">
@@ -162,7 +164,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label>Divisi Pegawai</label>
-                        <select class="custom-select" name="idDivisi">
+                        <select class="custom-select select" name="idDivisi">
                             <option value="">Pilih salah satu</option>
                             @foreach($ruangan as $row)
                             <option value="{{ $row->id }}" @if($isEdit) @if($row->id == $pegawai->idDivisi)
@@ -234,16 +236,19 @@
 @endsection
 @push('scripts')
 <script>
-    const customRadioInline3 = document.querySelector('#customRadioInline3');
-    const customRadioInline4 = document.querySelector('#customRadioInline4');
-    const idJamKerjaShift = document.querySelector("#idJamKerjaShift");
+$(document).ready(function() {
+    $('.select').select2();
+});
+const customRadioInline3 = document.querySelector('#customRadioInline3');
+const customRadioInline4 = document.querySelector('#customRadioInline4');
+const idJamKerjaShift = document.querySelector("#idJamKerjaShift");
 
-    customRadioInline3.addEventListener("change", function(e){
-        idJamKerjaShift.classList.add("hidden");
-    });
+customRadioInline3.addEventListener("change", function(e) {
+    idJamKerjaShift.classList.add("hidden");
+});
 
-    customRadioInline4.addEventListener("change", function(e){
-        idJamKerjaShift.classList.remove("hidden");
-    });
+customRadioInline4.addEventListener("change", function(e) {
+    idJamKerjaShift.classList.remove("hidden");
+});
 </script>
 @endpush

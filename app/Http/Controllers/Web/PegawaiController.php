@@ -77,7 +77,7 @@ class PegawaiController extends Controller
     {
         $page = "Tambah Pegawai";
         $isEdit = false;
-        $ruangan = Divisi::all();
+        $ruangan = Divisi::where('asal', 'duk_up')->get();
         $shift = WaktuKerjaShift::all();
         return view('pages.pegawai.create_edit', compact('page', 'isEdit', 'ruangan', 'shift'));
     }
@@ -146,7 +146,7 @@ class PegawaiController extends Controller
     {
         $page = "Edit Pegawai";
         $isEdit = true;
-        $ruangan = Divisi::all();
+        $ruangan = Divisi::where('asal', 'duk_up')->get();
         $shift = WaktuKerjaShift::all();
         $pegawai = Pegawai::leftJoin('users', 'users.pegawai_code', '=', 'pegawai.code')
             ->where('pegawai.id', $id)

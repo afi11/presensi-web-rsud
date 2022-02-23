@@ -1,7 +1,10 @@
 <?php
 
 use App\Models\Presensi;
+use App\Models\Pegawai;
 use App\Models\RuleTelat;
+use App\Models\HariLibur;
+use Carbon\Carbon;
 
 function cekPresensiMasuk($pegawaiCode) 
 {
@@ -54,12 +57,103 @@ function getStatusTelat($tipePresensi, $nTelat)
 function crosCekPresensi($kode)
 {
     $presensi = Presensi::where('activityCode', $kode)->first();
-    if($presensi->waktuShift == 'PAGI'){
+    if($presensi->tipeWaktu == 'PAGI'){
         $waktu = 'P';
-    }else if($presensi->waktuShift == 'SIANG'){
+    }else if($presensi->tipeWaktu == 'SIANG'){
         $waktu = 'S';
     }else{
         $waktu = 'M';
     }
     return $waktu;
+}
+
+function cekIzin($pegawaiCode)
+{
+    $today = date('Y-m-d');
+    $today = date('Y-m-d', strtotime($today));
+
+    $presensi = Presensi::where('pegawaiCode', $pegawaiCode)
+        ->orderBy('created_at', 'desc')
+        ->first();
+    if($presensi != null){
+        $stratDate = date('Y-m-d', strtotime($presensi->tanggalMulaiIzin));
+        $endDate = date('Y-m-d', strtotime($presensi->tanggalAkhirIzin));
+        if(($today >= $stratDate) && ($today <= $endDate)){
+            $state = true;
+        }else{
+            $state = false;
+        }
+    }else{
+        $state = false;
+    }
+    return $state;
+}
+
+function cekLibur($pegawaiCode)
+{
+    $today = Carbon::now()->format('Y-m-d');
+    $pegawai = Pegawai::where('code', $pegawaiCode)->first();
+    if($pegawai->statusShift == 0){
+        $cek = HariLibur::where('forlibur', 'reguler')->where('status', 1)->get();
+    }else{
+        $cek = HariLibur::where('forlibur', 'shift')->where('status', 1)->get();
+    }
+    $state = true;
+    $todayKalkulasi = date('Y-m-d', strtotime($today));
+    foreach($cek as $row){
+        $tanggalMulaiLibur = date('Y-m-d', strtotime($row->tanggalMulaiLibur));
+        $tanggalSelesaiLibur = date('Y-m-d', strtotime($row->tanggalSelesaiLibur));
+        if($todayKalkulasi >= $tanggalMulaiLibur && $todayKalkulasi <= $tanggalSelesaiLibur){
+            $state = false;
+            break;
+        }
+    }
+
+    return $state;
+}
+
+function getJamMasukPulang($activityCode)
+{   
+    $hasil = "";
+    if($activityCode != null){
+        $presensi = Presensi::where('activityCode', $activityCode)->first();
+        if($presensi->jamMasuk != null && $presensi->jamPulang != null){
+            $hasil = $presensi->jamMasuk.' '.$presensi->jamPulang;
+        }else{
+            $hasil = $presensi->tipeWaktu;
+        }
+    }
+    return $hasil;
+}
+
+function getPegawaiName($pegawaiCode)
+{
+    $pegawai = Pegawai::where('code', $pegawaiCode)->first();
+    return $pegawai->nama;
+}
+
+function getRuanganId($pegawaiCode)
+{
+    $pegawai = Pegawai::where('code', $pegawaiCode)->first();
+    return $pegawai->idDivisi;
+}
+
+function sumTelatMasuk($ruangan, $pegawai, $bulan)
+{
+    $presensi = Presensi::join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
+        ->where('pegawai.idDivisi', $ruangan)
+        ->where('presensi.pegawaiCode', $pegawai)
+        ->whereMonth('presensi.created_at', $bulan)
+        ->sum(\DB::raw("TIME_TO_SEC(presensi.telatMasuk)"));
+    return gmdate("H:i:s", $presensi);
+}
+
+function sumLewatPulang($ruangan, $pegawai, $bulan)
+{
+    $presensi = Presensi::join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
+        ->where('pegawai.idDivisi', $ruangan)
+        ->where('presensi.pegawaiCode', $pegawai)
+        ->whereMonth('presensi.created_at', $bulan)
+        ->sum(\DB::raw("TIME_TO_SEC(presensi.lewatPulang)"));
+    return gmdate("H:i:s", $presensi);
 }
