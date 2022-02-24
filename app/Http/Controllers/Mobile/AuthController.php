@@ -15,7 +15,8 @@ class AuthController extends Controller
 {
     
     public function __construct() {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'resetPassword']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'resetPassword', 
+            'cekAkun', 'viewResetPassword', 'viewHasilPassword', 'changePasswordUser']]);
     }
 
     public function login(Request $request){
@@ -81,16 +82,60 @@ class AuthController extends Controller
         return response()->json(["code" => 200, "data" => $pegawai]);
     }
 
+    public function cekAkun(Request $request)
+    {
+        $pegawai = Pegawai::join('users', 'users.pegawai_code', '=', 'pegawai.code')
+            ->where('users.email', $request->email)
+            ->first();
+        return response()->json(["code" => 200, "data" => $pegawai]);
+    }
+
     public function resetPassword(Request $request)
     {
         $pegawai = Pegawai::join('users', 'users.pegawai_code', '=', 'pegawai.code')
-            ->where('code', $request->pegawaiCode)->first();
-        $details = [
-            'pegawaiCode' => $pegawai->code,
-            'namaPegawai' => $pegawai->nama
-        ];
-        Mail::to($pegawai->email)->send(new \App\Mail\ResetPassword($details));
-        return response()->json(["code" => 200, "message" => "Berhasil melakukan reset password", "email" => $pegawai->email]);
+            ->where('email', $request->email)
+            ->first();
+        if($pegawai != null){
+            $message = "Link reset password telah dikirim, silahkan cek email anda.";
+            $details = [
+                'pegawaiCode' => $pegawai->code,
+                'namaPegawai' => $pegawai->nama
+            ];
+            Mail::to($pegawai->email)->send(new \App\Mail\ResetPassword($details));
+        }else{
+            $message = "Email yang anda masukkan tidak ditemukan.";
+        }
+        return response()->json(["code" => 200, "message" => $message]);
+    }
+
+    public function viewResetPassword()
+    {
+        return view('reset_password.reset_password');
+    }
+
+    public function viewHasilPassword()
+    {
+        return view('reset_password.hasil_reset_password');
+    }
+
+    public function changePasswordUser(Request $request, $pegawaiCode)
+    {
+        $validate_data = $this->validate(
+            $request,
+            [
+                'password' => 'required|confirmed',
+            ],
+            [
+                'password.required' => 'Password harus diisi',
+                'password.confirmed' => 'Password konfirmasi harus sama',
+            ]
+        );
+        User::where('pegawai_code', $pegawaiCode)
+            ->update([
+                'password' => bcrypt($request->password),
+                'password_hint' => $request->password
+            ]);
+        return redirect('hasil_reset_password');
     }
 
     public function updateProfil(Request $request, $pegawaiCode)

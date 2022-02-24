@@ -25,6 +25,8 @@ Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
     Route::get('/user-profile', [AuthController::class, 'userProfile']);
 });
 
+Route::post('reset_password', [AuthController::class, 'resetPassword']);
+Route::post('cek_akun', [AuthController::class, 'cekAkun']);
 
 Route::group(['middleware' => 'api'], function ($router) {
     // User
