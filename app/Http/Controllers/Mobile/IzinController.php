@@ -13,6 +13,12 @@ use DB;
 class IzinController extends Controller
 {
 
+    public function showIzin($izin)
+    {
+        $fileIzin = $izin;
+        return view('pages.file_izin.index', compact('fileIzin'));
+    }
+
     public function fetchRuleIzin(Request $request)
     {
         $ijin = array();
@@ -134,6 +140,18 @@ class IzinController extends Controller
             }   
         });
         return response()->json(["code" => 200, "message" => "Berhasil mengajukan izin"]);
+    }
+
+    public function batalIzin($kode)
+    {
+        DB::transaction(function() use ($kode) {
+            Presensi::where('activityCode', $kode)
+                ->update([
+                    'statusPresensi' => 0,
+                    'statusIzin' => 2,
+                ]);
+        });
+        return response()->json(["code" => 200, "message" => "Berhasil membatalkan izin"]);
     }
 
     public function updateIzin(Request $request, $kode)
