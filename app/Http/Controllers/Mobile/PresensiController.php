@@ -47,6 +47,7 @@ class PresensiController extends Controller
         $presensiPulang = cekPresensiPulang($request->pegawaiCode, $request->activityCode);
         $presensi = Presensi::where('pegawaiCode', $request->pegawaiCode)
             ->select('activityCode', 'idWaktuShift', 'tanggalPresensi')
+            ->where('idRuleIzin', null)
             ->where('statusPresensi', 0)
             ->orderBy('created_at', 'DESC')->first();
        
@@ -86,7 +87,7 @@ class PresensiController extends Controller
                 }
             }else{
                 $waktu = WaktuKerjaShift::join('detail_waktu_kerja_shift', 'detail_waktu_kerja_shift.kodeJamKerja', '=', 'waktu_kerja_shift.kodeJamKerja')
-                    ->where('waktu_kerja_shift.id',  $getStatus->idJamKerjaShift)
+                    ->where('waktu_kerja_shift.id', $getStatus->idJamKerjaShift)
                     ->where('detail_waktu_kerja_shift.is_active', 1)
                     ->select('detail_waktu_kerja_shift.id', 
                         'detail_waktu_kerja_shift.shift',
@@ -267,7 +268,7 @@ class PresensiController extends Controller
                 ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
                 ->where('tanggalPresensi', '<>', null)
                 ->where('idRuleTelatMasuk', null)
-                ->orWhere('idRuleLewatPulang', null)
+                ->where('idRuleLewatPulang', null)
                 ->count();
             $presensi = Presensi::where('pegawaiCode', $pegawaiCode)
                 ->whereBetween('created_at', [
@@ -286,7 +287,7 @@ class PresensiController extends Controller
             $countTepat = Presensi::where('pegawaiCode', $pegawaiCode)
                 ->whereMonth('created_at', Carbon::now()->format('m'))
                 ->where('idRuleTelatMasuk', null)
-                ->orWhere('idRuleLewatPulang', null)
+                ->where('idRuleLewatPulang', null)
                 ->where('tanggalPresensi', '<>', null)
                 ->count();
             $presensi = Presensi::where('pegawaiCode', $pegawaiCode)

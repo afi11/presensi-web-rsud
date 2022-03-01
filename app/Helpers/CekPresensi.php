@@ -4,12 +4,14 @@ use App\Models\Presensi;
 use App\Models\Pegawai;
 use App\Models\RuleTelat;
 use App\Models\HariLibur;
+use App\Models\PresensiCroscheck;
 use Carbon\Carbon;
 
 function cekPresensiMasuk($pegawaiCode) 
 {
     $masuk = Presensi::where('pegawaiCode', $pegawaiCode)
         ->where('statusPresensi', 0)
+        ->where('statusIzin', null)
         ->orderBy('created_at', 'DESC')
         ->first();
     return $masuk;
@@ -21,6 +23,7 @@ function cekPresensiPulang($pegawaiCode, $activityCode)
     $pulang = Presensi::where('pegawaiCode', $pegawaiCode)
         ->where('activityCode', $activityCode)
         ->where('statusPresensi', 1)
+        ->where('statusIzin', null)
         ->orderBy('created_at', 'DESC')
         ->first();
     return $pulang;
@@ -61,6 +64,16 @@ function crosCekPresensi($kode)
         $waktu = 'P';
     }else if($presensi->tipeWaktu == 'SIANG'){
         $waktu = 'S';
+    }else if($presensi->tipeWaktu == 'Dinas Luar'){
+        $waktu = 'DL';
+    }else if($presensi->tipeWaktu == 'Izin'){
+        $waktu = 'I';
+    }else if($presensi->tipeWaktu == 'Sakit'){
+        $waktu = 'SKT';
+    }else if($presensi->tipeWaktu == 'Pulang Cepat'){
+        $waktu = 'PC';
+    }else if($presensi->tipeWaktu == 'CUTI'){
+        $waktu = 'CT';
     }else{
         $waktu = 'M';
     }
@@ -112,18 +125,38 @@ function cekLibur($pegawaiCode)
     return $state;
 }
 
-function getJamMasukPulang($activityCode)
+function getJamMasukPulang($pegawaiCode, $bulan, $tahun, $field)
 {   
     $hasil = "";
-    if($activityCode != null){
-        $presensi = Presensi::where('activityCode', $activityCode)->first();
-        if($presensi->jamMasuk != null && $presensi->jamPulang != null){
-            $hasil = $presensi->jamMasuk.' '.$presensi->jamPulang;
+    $presensi = PresensiCroscheck::leftJoin('presensi', 'presensi.activityCode', '=', 'presensi_croscheck.'.$field) 
+        ->where('presensi_croscheck.pegawaiCode', $pegawaiCode)
+        ->where('presensi_croscheck.bulan', $bulan)
+        ->where('presensi_croscheck.tahun', $tahun)
+        ->first();
+    if($presensi != null){
+        $data = $presensi->toArray();
+        $fieldTambahan = 'hasil_'.$field;
+        if($data['jamMasuk'] != null || $data['jamPulang'] != null){
+            $hasil = $data['jamMasuk'].' '. $data['jamPulang'].'<br/>'.$data[$fieldTambahan];
         }else{
-            $hasil = $presensi->tipeWaktu;
+            $hasil = $data['tipeWaktu'].'<br/>'.$data[$fieldTambahan];
         }
     }
     return $hasil;
+
+}
+
+function getCroshcekKeterangan($pegawai, $bulan, $tahun)
+{   
+    $ket = "";
+    $presensiCroshCheck = PresensiCroscheck::where('pegawaiCode', $pegawai)
+        ->where('bulan', $bulan)
+        ->where('tahun', $tahun)
+        ->first();
+    if($presensiCroshCheck != null){
+        $ket = $presensiCroshCheck->keterangan;
+    }
+    return $ket;
 }
 
 function getPegawaiName($pegawaiCode)

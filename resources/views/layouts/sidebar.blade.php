@@ -49,7 +49,7 @@
             </li>
             <li>
                 <a href="javascript:;"><i class="sidebar-item-icon fa fa-edit"></i>
-                    <span class="nav-label">Presensi</span><i class="fa fa-angle-left arrow"></i></a>
+                    <span class="nav-label">Presensi</span><i class="fa fa-angle-down arrow"></i></a>
                 <ul class="nav-2-level collapse in">
                     <li>
                         <a @if(Request::segment(1)=='sinkronisasi' ) class="active" @endif

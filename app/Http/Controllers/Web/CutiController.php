@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Presensi;
 use App\Models\Pegawai;
 use App\Models\Divisi;
+use App\Models\PresensiCroscheck;
+use Carbon\Carbon;
+use DB;
 
 class CutiController extends Controller
 {
@@ -16,14 +19,15 @@ class CutiController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-
     {
-        $listRuangan = Divisi::join('pegawai', 'pegawai.idDivisi', '=', 'divisi.id')
-            ->select('divisi.id', 'divisi.namaDivisi as namaDivisi')
-            ->distinct()
-            ->orderBy('namaDivisi', 'asc')
+        $izins = Presensi::join('rule-izin', 'rule-izin.id', '=', 'presensi.idRuleIzin')
+            ->join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
+            ->where('presensi.tanggalMulaiIzin', '<>', null)
+            ->where('presensi.tanggalAkhirIzin',  '<>', null)
+            ->select('presensi.*', 'rule-izin.namaIzin', 'pegawai.nama')
+            ->orderBy('presensi.statusIzin', 'asc')
             ->get();
-        return view('pages.cuti.index', compact('listRuangan'));
+        return view('pages.cuti.index', compact('izins'));
     }
 
     /**
@@ -53,11 +57,15 @@ class CutiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($idDivisi)
+    public function show($activityCode)
     {
-        $divisi = Divisi::find($idDivisi);
-        $pegawai = Pegawai::where('idDivisi', $idDivisi)->get();
-        return view('pages.cuti.show', compact('pegawai', 'divisi'));
+        $izin = Presensi::join('rule-izin', 'rule-izin.id', '=', 'presensi.idRuleIzin')
+            ->join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
+            ->where('presensi.activityCode', $activityCode)
+            ->select('presensi.*', 'rule-izin.namaIzin', 'pegawai.nama', 'pegawai.nik')
+            ->orderBy('presensi.statusIzin', 'desc')
+            ->first();
+        return view('pages.cuti.show', compact('izin'));
     }
 
     public function showCuti($code)
@@ -81,7 +89,7 @@ class CutiController extends Controller
      */
     public function edit($id)
     {
-        //
+      
     }
 
     /**
@@ -93,7 +101,39 @@ class CutiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        DB::transaction(function() use ($request, $id) {
+            $presensi = Presensi::find($id);
+            $presensi->statusIzin = $request->statusIzin;
+            $presensi->save();
+
+            $listTanggalCuti = getDatesFromRange($presensi->tanggalMulaiIzin, $presensi->tanggalAkhirIzin);
+            for($i = 0; $i < count($listTanggalCuti); $i++){
+                $bulan = Carbon::parse($listTanggalCuti[$i])->format('m');
+                $tanggal = Carbon::parse($listTanggalCuti[$i])->format('d');
+                $tahun = Carbon::parse($listTanggalCuti[$i])->format('Y');
+                $fieldTanggal = "tgl_".$tanggal;
+                $cekCrosCheck =  PresensiCroscheck::where('pegawaiCode', $presensi->pegawaiCode)
+                    ->where('bulan', $bulan)
+                    ->where('tahun', $tahun)
+                    ->count();
+                if($cekCrosCheck > 0){
+                    PresensiCroscheck::where('pegawaiCode', $presensi->pegawaiCode)
+                        ->where('bulan', $bulan)
+                        ->where('tahun', $tahun)
+                        ->update([
+                            $fieldTanggal => $presensi->activityCode
+                        ]); 
+                }else{
+                    PresensiCroscheck::create([
+                        "pegawaiCode" => $presensi->pegawaiCode,
+                        "bulan" => $bulan,
+                        "tahun" => $tahun,
+                        $fieldTanggal => $presensi->activityCode
+                    ]);
+                }
+            } 
+        });
+        return redirect('pengajuan_cuti')->with('success', 'Status Cuti / Izin Sudah Diubah');
     }
 
     /**

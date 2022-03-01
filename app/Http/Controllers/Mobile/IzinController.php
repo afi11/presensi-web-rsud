@@ -13,19 +13,68 @@ use DB;
 class IzinController extends Controller
 {
 
-    public function fetchRuleIzin()
+    public function fetchRuleIzin(Request $request)
     {
-        $ruleIzin = RuleIzin::select('id', 'namaIzin')->get();
-        return response()->json(["code" => 200, "data" => $ruleIzin]);
+        $ijin = array();
+        array_push($ijin, [
+            'id' => 0,
+            'namaIzin' => 'Pilih --'
+        ]);
+        $ruleIzin = RuleIzin::all();
+        $presensi = Presensi::where('pegawaiCode', $request->pegawaiCode)
+            ->select('activityCode')
+            ->where('statusIzin', null)
+            ->orderBy('created_at', 'DESC')->first();
+        if($presensi != null){
+            $activityCode = $presensi->activityCode;
+        }else{
+            $activityCode = null;
+        }
+        foreach($ruleIzin as $row){
+            array_push($ijin, [
+                'id' => $row->id,
+                'namaIzin' => $row->namaIzin
+            ]);
+        }
+        return response()->json(["code" => 200, "data" => $ijin, "activityCode" => $activityCode]);
+    }
+
+    public function fetchRuleIzin2(Request $request)
+    {
+        $ijin = array();
+        array_push($ijin, [
+            'id' => 0,
+            'namaIzin' => 'Pilih --'
+        ]);
+        $ruleIzin = RuleIzin::all();
+        $presensi = Presensi::where('pegawaiCode', $request->pegawaiCode)
+            ->select('activityCode')
+            ->where('jamMasuk', '<>',null)
+            ->where('keteranganIzin', 'PULANG CEPAT')
+            ->orderBy('created_at', 'DESC')->first();
+        if($presensi != null){
+            $activityCode = $presensi->activityCode;
+        }else{
+            $activityCode = null;
+        }
+        foreach($ruleIzin as $row){
+            array_push($ijin, [
+                'id' => $row->id,
+                'namaIzin' => $row->namaIzin
+            ]);
+        }
+        return response()->json(["code" => 200, "data" => $ijin, "activityCode" => $activityCode]);
     }
 
     public function fetchHistoryIzin(Request $request)
     {
         $izins = Presensi::join('rule-izin', 'rule-izin.id', '=', 'presensi.idRuleIzin')
+            ->join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
+            ->join('divisi', 'divisi.id', '=', 'pegawai.idDivisi')
             ->where('presensi.pegawaiCode', $request->pegawaiCode)
             ->where('presensi.tanggalMulaiIzin', '<>', null)
             ->where('presensi.tanggalAkhirIzin',  '<>', null)
-            ->select('presensi.*', 'rule-izin.namaIzin')
+            ->select('presensi.*', 'rule-izin.namaIzin', 'pegawai.nama', 'divisi.namaDivisi')
             ->orderBy('presensi.created_at', 'desc')
             ->get();
         return response()->json(["code" => 200, "data" => $izins]);
@@ -33,62 +82,148 @@ class IzinController extends Controller
     
     public function sendIzin(Request $request)
     {
-        $tipeFile = $request->tipefile;
-        $tipe = "";
-        if($tipeFile == "application/pdf"){
-            $tipe = ".pdf";
-        }else if($tipeFile == "image/jpeg"){
-            $tipe = ".jpg";
-        }else{
-            $tipe = ".png";
+        if($request->fileIzin != ""){
+            $tipeFile = $request->tipefile;
+            $tipe = "";
+            if($tipeFile == "application/pdf"){
+                $tipe = ".pdf";
+            }else if($tipeFile == "image/jpeg"){
+                $tipe = ".jpg";
+            }else{
+                $tipe = ".png";
+            }
+            $fileName = Carbon::now()->format('Y-m-d').'-'.\Illuminate\Support\Str::random(10).$tipe;
+            $path = public_path().'/files/izin/';
+            file_put_contents($path.$fileName,base64_decode($request->fileIzin));
         }
-        $fileName = Carbon::now()->format('Y-m-d').'-'.\Illuminate\Support\Str::random(10).$tipe;
-        $path = public_path().'/files/izin/';
-        file_put_contents($path.$fileName,base64_decode($request->fileIzin));
 
         $kode = getKodePresensi();
         DB::transaction(function() use ($request, $kode, $fileName) {
-            Presensi::create([
-                'activityCode' => $kode,
-                'pegawaiCode' => $request->pegawaiCode,
-                'idRuleIzin' => $request->idRuleIzin,
-                'keteranganIzin' => $request->keteranganIzin,
-                'tanggalMulaiIzin' => $request->tanggalMulaiIzin,
-                'tanggalAkhirIzin' => $request->tanggalAkhirIzin,
-                'tipeWaktu' => $request->tipeWaktu,
-                'dokumenPendukung' => $fileName,
-                'statusIzin' => 1,
-                'statusPresensi' => 1
-            ]);
-    
-            $listTanggalCuti = getDatesFromRange($request->tanggalMulaiIzin, $request->tanggalAkhirIzin);
-            for($i = 0; $i < count($listTanggalCuti); $i++){
-                $bulan = Carbon::parse($listTanggalCuti[$i])->format('m');
-                $tanggal = Carbon::parse($listTanggalCuti[$i])->format('d');
-                $tahun = Carbon::parse($listTanggalCuti[$i])->format('Y');
-                $fieldTanggal = "tgl_".$tanggal;
-                $cekCrosCheck =  PresensiCroscheck::where('pegawaiCode', $request->pegawaiCode)
-                    ->where('bulan', $bulan)
-                    ->where('tahun', $tahun)
-                    ->count();
-                if($cekCrosCheck > 0){
-                    PresensiCroscheck::where('pegawaiCode', $request->pegawaiCode)
-                        ->where('bulan', $bulan)
-                        ->where('tahun', $tahun)
-                        ->update([
-                            $fieldTanggal => $kode
-                        ]); 
-                }else{
-                    PresensiCroscheck::create([
-                        "pegawaiCode" => $request->pegawaiCode,
-                        "bulan" => $bulan,
-                        "tahun" => $tahun,
-                        $fieldTanggal => $kode
+            if($request->idRuleIzin == 4){
+                Presensi::where('activityCode', $request->activityCode)
+                    ->update([
+                        'statusPresensi' => 1,
+                        'statusIzin' => 1,
+                        'keteranganIzin' => 'PULANG CEPAT'
                     ]);
-                }
-            }
+                Presensi::create([
+                    'activityCode' => $kode,
+                    'pegawaiCode' => $request->pegawaiCode,
+                    'idRuleIzin' => $request->idRuleIzin,
+                    'keteranganIzin' => $request->keteranganIzin,
+                    'tanggalMulaiIzin' => $request->tanggalMulaiIzin,
+                    'tanggalAkhirIzin' => $request->tanggalAkhirIzin,
+                    'tipeWaktu' => $request->tipeWaktu,
+                    'dokumenPendukung' => $fileName,
+                    'statusIzin' => 0,
+                    'statusPresensi' => 1
+                ]);
+            }else{
+                Presensi::create([
+                    'activityCode' => $kode,
+                    'pegawaiCode' => $request->pegawaiCode,
+                    'idRuleIzin' => $request->idRuleIzin,
+                    'keteranganIzin' => $request->keteranganIzin,
+                    'tanggalMulaiIzin' => $request->tanggalMulaiIzin,
+                    'tanggalAkhirIzin' => $request->tanggalAkhirIzin,
+                    'tipeWaktu' => $request->tipeWaktu,
+                    'dokumenPendukung' => $fileName,
+                    'statusIzin' => 0,
+                    'statusPresensi' => 1
+                ]);
+            }   
         });
         return response()->json(["code" => 200, "message" => "Berhasil mengajukan izin"]);
+    }
+
+    public function updateIzin(Request $request, $kode)
+    {
+        $fileName = "";
+        if($request->fileIzin != ""){
+            $tipeFile = $request->tipefile;
+            $tipe = "";
+            if($tipeFile == "application/pdf"){
+                $tipe = ".pdf";
+            }else if($tipeFile == "image/jpeg"){
+                $tipe = ".jpg";
+            }else{
+                $tipe = ".png";
+            }
+            $fileName = Carbon::now()->format('Y-m-d').'-'.\Illuminate\Support\Str::random(10).$tipe;
+            $path = public_path().'/files/izin/';
+            file_put_contents($path.$fileName,base64_decode($request->fileIzin));
+        }
+
+        DB::transaction(function() use ($request, $kode, $fileName) {
+            if($request->activityCode != null){
+                Presensi::where('activityCode',$request->activityCode)
+                    ->update([
+                        'idRuleIzin' => null,
+                        'statusPresensi' => 0,
+                        'statusIzin' => null,
+                    ]);
+                Presensi::where('activityCode',$kode)
+                    ->update([
+                        'idRuleIzin' => $request->idRuleIzin,
+                        'keteranganIzin' => $request->keteranganIzin,
+                        'tanggalMulaiIzin' => $request->tanggalMulaiIzin,
+                        'tanggalAkhirIzin' => $request->tanggalAkhirIzin,
+                        'tipeWaktu' => $request->tipeWaktu,
+                        'dokumenPendukung' => $fileName,
+                    ]);
+            }else{
+                if($request->idRuleIzin == 4){
+                    Presensi::where('activityCode', $request->activityCode)
+                        ->update([
+                            'statusPresensi' => 1,
+                            'statusIzin' => 1,
+                            'keteranganIzin' => 'PULANG CEPAT'
+                        ]);
+                    if($request->fileIzin != ""){
+                        Presensi::where('activityCode',$kode)
+                            ->update([
+                                'idRuleIzin' => $request->idRuleIzin,
+                                'keteranganIzin' => $request->keteranganIzin,
+                                'tanggalMulaiIzin' => $request->tanggalMulaiIzin,
+                                'tanggalAkhirIzin' => $request->tanggalAkhirIzin,
+                                'tipeWaktu' => $request->tipeWaktu,
+                                'dokumenPendukung' => $fileName,
+                            ]);
+                    }else{
+                        Presensi::where('activityCode',$kode)
+                            ->update([
+                                'idRuleIzin' => $request->idRuleIzin,
+                                'keteranganIzin' => $request->keteranganIzin,
+                                'tanggalMulaiIzin' => $request->tanggalMulaiIzin,
+                                'tanggalAkhirIzin' => $request->tanggalAkhirIzin,
+                                'tipeWaktu' => $request->tipeWaktu,
+                            ]);
+                    }
+                }else{
+                    if($request->fileIzin != ""){
+                        Presensi::where('activityCode',$kode)
+                            ->update([
+                                'idRuleIzin' => $request->idRuleIzin,
+                                'keteranganIzin' => $request->keteranganIzin,
+                                'tanggalMulaiIzin' => $request->tanggalMulaiIzin,
+                                'tanggalAkhirIzin' => $request->tanggalAkhirIzin,
+                                'tipeWaktu' => $request->tipeWaktu,
+                                'dokumenPendukung' => $fileName,
+                            ]);
+                    }else{
+                        Presensi::where('activityCode',$kode)
+                            ->update([
+                                'idRuleIzin' => $request->idRuleIzin,
+                                'keteranganIzin' => $request->keteranganIzin,
+                                'tanggalMulaiIzin' => $request->tanggalMulaiIzin,
+                                'tanggalAkhirIzin' => $request->tanggalAkhirIzin,
+                                'tipeWaktu' => $request->tipeWaktu,
+                            ]);
+                    }
+                }   
+            }
+        });
+        return response()->json(["code" => 200, "message" => "Berhasil mengubah izin"]);
     }
 
 }

@@ -105,7 +105,7 @@ class WaktuRegulerController extends Controller
     public function destroy($id)
     {
         $waktuReguler = WaktuReguler::find($id);
-        $waktuReguler->destroy();
+        $waktuReguler->delete();
         return redirect()->back()->with('success','Berhasil Menghapus Data Jam Kerja Reguler');
     }
 }

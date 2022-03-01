@@ -34,10 +34,14 @@ Route::group(['middleware' => 'api'], function ($router) {
     // Presensi
     Route::get('fetch-time-presensi', [PresensiController::class, 'fetchTime']);
     Route::post('send-presensi', [PresensiController::class, 'sendPresensi']);
-    Route::get('fetch-history-presensi', [PresensiController::class, 'fetchHistoryPresensi']);
+    
     Route::get('fetch-all-history-presensi', [PresensiController::class, 'fetchAllHistoryPresensi']);
     Route::get('fetch-profil', [AuthController::class, 'getProfil']);
     Route::get('fetch-rule-izin', [IzinController::class, 'fetchRuleIzin']);
+    Route::get('fetch-rule-izin-edit-cuti', [IzinController::class, 'fetchRuleIzin2']);
     Route::post('send-izin', [IzinController::class, 'sendIzin']);
     Route::get('fetch-histori-izin', [IzinController::class, 'fetchHistoryIzin']);
+    Route::put('update-presensi/{kode}', [IzinController::class, 'updateIzin']);
 });
+
+Route::get('fetch-history-presensi', [PresensiController::class, 'fetchHistoryPresensi']);

@@ -12,27 +12,42 @@
 </div>
 <div class="ibox mt-3">
     <div class="ibox-head">
-        <div class="ibox-title">Daftar Ruangan</div>
+        <div class="ibox-title">Daftar Pengajuan</div>
     </div>
     <div class="ibox-body">
         <table class="table table-striped" id="datatable">
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Nama Ruangan</th>
+                    <th>Kode Pegawai</th>
+                    <th>Pegawai</th>
+                    <th>Izin / Cuti</th>
+                    <th>Tanggal Izin</th>
+                    <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @php $no = 0; @endphp
-                @foreach($listRuangan as $row)
+                @foreach($izins as $row)
                 @php $no++; @endphp
                 <tr>
                     <td>{{ $no }}</td>
-                    <td>{{ $row->namaDivisi }}</td>
+                    <td>{{ $row->pegawaiCode }}</td>
+                    <td>{{ $row->nama }}</td>
+                    <td>{{ $row->namaIzin }}</td>
+                    <td>{{ $row->tanggalMulaiIzin }} - {{ $row->tanggalAkhirIzin }}</td>
                     <td>
-                        <a href="{{ route('pengajuan_cuti.show', $row->id) }}"
-                            class="btn btn-primary btn-sm mb-3 text-white"><span class="fa fa-user"></span> Daftar Pegawai</a>
+                        @if($row->statusIzin == 0)
+                            <span class="text-warning">Pending</span>
+                        @elseif($row->statusIzin == 1)
+                            <span class="text-success">Diterima</span>
+                        @else
+                            <span class="text-danger">Ditolak</span>
+                        @endif
+                    <td>
+                        <a href="{{ route('pengajuan_cuti.show', $row->activityCode) }}"
+                            class="btn btn-primary btn-sm mb-3 text-white">Detail</a>
                     </td>
                 </tr>
                 @endforeach
