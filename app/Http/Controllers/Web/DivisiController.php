@@ -54,7 +54,10 @@ class DivisiController extends Controller
     public function store(Request $request)
     {
         $this->validation($request);
-        Divisi::create($request->all());
+        Divisi::create([
+            "namaDivisi" => $request->namaDivisi,
+            "asal" => "duk_up"
+        ]);
         return redirect('ruangan')->with('success','Berhasil Menambah Data Divisi');
     }
 
@@ -95,7 +98,6 @@ class DivisiController extends Controller
         $this->validation($request);
         $ruangan = Divisi::find($id);
         $ruangan->namaDivisi = $request->namaDivisi;
-        $ruangan->keteranganDivisi = $request->keteranganDivisi;
         $ruangan->save();
         return redirect('ruangan')->with('success','Berhasil Mengubah Data Divisi');
     }

@@ -26,19 +26,25 @@ class PresensiController extends Controller
         $tipePresensi = "";
         $isAblePresensi = true;
         if($presensiMasuk != null){
-            $tipePresensi = 'jam-pulang';
+            if($presensiMasuk->statusPresensi == 0){
+                $tipePresensi = 'jam-pulang';
+            }else{
+                $tipePresensi = 'jam-masuk';
+            }
             if($getStatus->statusShift == 0){
                 $waktu = WaktuReguler::find($presensiMasuk->idWaktuReguler);
                 $ambilWaktu = $presensiMasuk->tanggalPresensi." ".$waktu->jam_akhir_pulang;
+                $selisih = getDiffTimeByHour($ambilWaktu, Carbon::now());
+                if($selisih > 3){
+                    $tipePresensi = 'jam-masuk';
+                }else{
+                    $tipePresensi = 'jam-pulang';
+                }
             }else{
                 $waktu = DetailWaktuKerjaShift::find($presensiMasuk->idWaktuShift);
-                $ambilWaktu = $presensiMasuk->tanggalPresensi." ".$waktu->jam_akhir_pulang;
-            }
-            $selisih = getDiffTimeByHour($ambilWaktu, Carbon::now());
-            if($selisih > 3){
-                $tipePresensi = 'jam-masuk';
-            }else{
-                $tipePresensi = 'jam-pulang';
+                if($waktu != null){
+                    $ambilWaktu = $presensiMasuk->tanggalPresensi." ".$waktu->jam_akhir_pulang;
+                }
             }
         }else{
             $tipePresensi = 'jam-masuk';
@@ -46,9 +52,9 @@ class PresensiController extends Controller
 
         $presensiPulang = cekPresensiPulang($request->pegawaiCode, $request->activityCode);
         $presensi = Presensi::where('pegawaiCode', $request->pegawaiCode)
-            ->select('activityCode', 'idWaktuShift', 'tanggalPresensi')
+            ->select('activityCode', 'idWaktuShift', 'tanggalPresensi', 'statusPresensi')
             ->where('idRuleIzin', null)
-            ->where('statusPresensi', 0)
+            //->where('statusPresensi', 0)
             ->orderBy('created_at', 'DESC')->first();
        
         if($getStatus->statusShift == 0){
@@ -58,7 +64,7 @@ class PresensiController extends Controller
                     $isAblePresensi = false;
                 }
             }else{
-                if(getDiffTimeBySecond(Carbon::now(), $waktuPresensi->jam_awal_pulang) > 0){
+                if(getDiffTimeByMinute(Carbon::now(), $waktuPresensi->jam_awal_pulang) > 90){
                     $isAblePresensi = false;
                 }
             }
@@ -82,7 +88,7 @@ class PresensiController extends Controller
                         'jam_awal_pulang',
                         'jam_akhir_pulang')
                     ->first();
-                if(getDiffTimeBySecond(Carbon::now(), $waktuPresensiShift->jam_awal_pulang) > 0){
+                if(getDiffTimeByMinute(Carbon::now(), $waktuPresensiShift->jam_awal_pulang) > 90){
                     $isAblePresensi = false;
                 }
             }else{
@@ -135,7 +141,7 @@ class PresensiController extends Controller
             "telatMasuk" => $presensiMasuk != null ? $presensiMasuk->telatMasuk : null,
             "presensiPulang" => $presensiPulang != null ?  $presensiPulang->jamPulang : null,
             "jarakPresensiPulang" =>  $presensiPulang != null ? getHourFromDateTime($presensiPulang->lewatPulang) : null,
-            "activityCode" => $presensi,
+            "activityCode" => $tipePresensi == "jam-masuk" ? null : $presensi,
             "data" => $waktuPresensi,
         ]);
     }
@@ -163,7 +169,7 @@ class PresensiController extends Controller
                 $presensi->telatMasuk = $jamTelatMasuk;
                 if($jamTelatMasuk != "00:00:00"){
                     $telatMenit = getDiffTimeByMinute($request->waktuKerja, $waktuPresensiUser);
-                    $presensi->idRuleTelatMasuk = getStatusTelat('jam-masuk', $telatMenit);
+                    $presensi->idRuleTelatMasuk = cekTelatMasukPulang('jam-masuk', $telatMenit);
                 }
                 $presensi->jarakJamMasuk = $request->jarakPresensi;
                 $presensi->latJamMasuk = $request->latitudePresensi;
@@ -182,7 +188,12 @@ class PresensiController extends Controller
                 $presensi->longJamPulang  = $request->longitudePresensi;
                 if($jamLewatPulang != "00:00:00"){
                     $telatMenit = getDiffTimeByMinute($request->waktuKerja, $waktuPresensiUser);
-                    $presensi->idRuleLewatPulang = getStatusTelat('jam-pulang', $telatMenit);
+                    if($telatMenit < 0){
+                        $telatMenit = abs($telatMenit);
+                        $presensi->idRuleLewatPulang = cekTelatMasukPulang('jam-pulang', $telatMenit);
+                    }else if($telatMenit >= 91){
+                        $presensi->idRuleLewatPulang = cekPalingTelatPulang();
+                    }
                 }
             }
         

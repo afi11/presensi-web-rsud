@@ -5,7 +5,7 @@
     {{ $details['namaPegawai'] }} dengan kode {{ $details['pegawaiCode'] }} 
 </h3>
 
-@component('mail::button', ['url' => 'http://192.168.100.14/37b60eda89b5204fc5beda94005abe90d8cc6d25/'.$details['pegawaiCode']])
+@component('mail::button', ['url' => 'http://182.253.66.122:2077/37b60eda89b5204fc5beda94005abe90d8cc6d25/'.$details['pegawaiCode']])
     Reset Password
 @endcomponent
 

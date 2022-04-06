@@ -148,7 +148,7 @@ class IzinController extends Controller
             Presensi::where('activityCode', $kode)
                 ->update([
                     'statusPresensi' => 0,
-                    'statusIzin' => 2,
+                    'statusIzin' => 3,
                 ]);
         });
         return response()->json(["code" => 200, "message" => "Berhasil membatalkan izin"]);

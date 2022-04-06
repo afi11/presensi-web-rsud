@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Divisi extends Model
+class RuleTelatV2 extends Model
 {
     use HasFactory;
-    protected $table = 'divisi';
+    protected $table = "rule_telat_v2";
     protected $fillable = [
-        'namaDivisi',
-        'asal'
+        "nameTelat",
+        "tipe",
+        "max_telat-1",
+        "max_telat-2",
     ];
 }

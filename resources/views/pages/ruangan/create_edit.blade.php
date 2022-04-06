@@ -37,14 +37,6 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="form-group">
-                        <label>Keterangan Divisi</label>
-                        <input class="form-control" name="keteranganDivisi"
-                            type="text" placeholder=".." @if($isEdit)
-                            value="{{ $ruangan->keteranganDivisi }}" @endif />
-                    </div>
-                </div>
-                <div class="col-md-4">
                     <div class="form-group mt-4">
                         <button type="submit" class="btn btn-success text-white pointer">Simpan</button>
                         <a href="{{ url()->previous() }}" class="btn btn-primary text-white pointer">Kembali</a>

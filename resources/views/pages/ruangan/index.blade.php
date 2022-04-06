@@ -30,7 +30,6 @@
                 <tr>
                     <th>No</th>
                     <th>Divisi</th>
-                    <th>Keterangan</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -41,7 +40,6 @@
                 <tr>
                     <td>{{ $no }}</td>
                     <td>{{ $row->namaDivisi }}</td>
-                    <td>{{ $row->keteranganDivisi }}</td>
                     <td>
                         <a href="{{ route('ruangan.edit', $row->id) }}"
                             class="btn btn-primary btn-sm mb-3 text-white"><span class="fa fa-edit"></span> Edit</a>

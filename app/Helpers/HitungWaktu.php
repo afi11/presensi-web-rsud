@@ -9,11 +9,7 @@ function getNameDay() {
 
 function getHitungTelat($startDate, $endDate) {
     $selisihWaktu = "00:00:00";
-    if(getDiffTimeBySecond($startDate, $endDate) > 0){
-        $selisihWaktu = getDiffTime($startDate, $endDate);
-    }else if(getDiffTimeByMinute($startDate, $endDate) > 0){
-        $selisihWaktu = getDiffTime($startDate, $endDate);
-    }else if(getDiffTimeByHour($startDate, $endDate) > 0){
+    if(getDiffTime($startDate, $endDate) != "00:00:00"){
         $selisihWaktu = getDiffTime($startDate, $endDate);
     }
     return $selisihWaktu;

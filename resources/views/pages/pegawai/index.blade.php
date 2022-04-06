@@ -34,6 +34,7 @@
                     <th>No</th>
                     <th>NIK</th>
                     <th>Nama</th>
+                    <th>Kode Pegawai</th>
                     <th>Status</th>
                     <th>Divisi</th>
                     <th>Aksi</th>
@@ -47,6 +48,7 @@
                     <td>{{ $no }}</td>
                     <td>{{ $row->nik }}</td>
                     <td>{{ $row->nama }}</td>
+                    <td>{{ $row->code }}</td>
                     <td>{{ $row->status }}</td>
                     <td>{{ $row->namaDivisi }}</td>
                     <td>

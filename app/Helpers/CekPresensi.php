@@ -4,13 +4,13 @@ use App\Models\Presensi;
 use App\Models\Pegawai;
 use App\Models\RuleTelat;
 use App\Models\HariLibur;
+use App\Models\RuleTelatV2;
 use App\Models\PresensiCroscheck;
 use Carbon\Carbon;
 
 function cekPresensiMasuk($pegawaiCode) 
 {
     $masuk = Presensi::where('pegawaiCode', $pegawaiCode)
-        ->where('statusPresensi', 0)
         ->where('statusIzin', null)
         ->orderBy('created_at', 'DESC')
         ->first();
@@ -57,27 +57,65 @@ function getStatusTelat($tipePresensi, $nTelat)
     return $idRuleTelat;
 }
 
+function cekTelatMasukPulang($tipePresensi, $nTelat)
+{
+    $ruleTelat = RuleTelatV2::where('tipe', $tipePresensi)->get();
+    $idRuleTelat = 0;
+    foreach($ruleTelat as $row){
+        if($nTelat >= $row->max_telat_1 && $nTelat <= $row->max_telat_2){
+            $idRuleTelat = $row->id;
+            break;
+        }
+    }
+    return $idRuleTelat;
+}
+
+function cekPalingTelatPulang()
+{
+    $ruleTelat = RuleTelatV2::where('tipe', 'jam-pulang')
+        ->where('max_telat_1', 91)
+        ->where('max_telat_2', null)
+        ->first();
+    return $ruleTelat->id;
+}
+
 function crosCekPresensi($kode)
 {
     $presensi = Presensi::where('activityCode', $kode)->first();
-    if($presensi->tipeWaktu == 'PAGI'){
-        $waktu = 'P';
-    }else if($presensi->tipeWaktu == 'SIANG'){
-        $waktu = 'S';
-    }else if($presensi->tipeWaktu == 'Dinas Luar'){
-        $waktu = 'DL';
-    }else if($presensi->tipeWaktu == 'Izin'){
-        $waktu = 'I';
-    }else if($presensi->tipeWaktu == 'Sakit'){
-        $waktu = 'SKT';
-    }else if($presensi->tipeWaktu == 'Pulang Cepat'){
-        $waktu = 'PC';
-    }else if($presensi->tipeWaktu == 'CUTI'){
-        $waktu = 'CT';
+    if($presensi != null){
+        if($presensi->idWaktuReguler != null){
+            $waktu = 'P';
+        }else if($presensi->tipeWaktu == 'PAGI'){
+            $waktu = 'P';
+        }else if($presensi->tipeWaktu == 'SIANG'){
+            $waktu = 'S';
+        }else if($presensi->tipeWaktu == 'Dinas Luar'){
+            $waktu = 'DL';
+        }else if($presensi->tipeWaktu == 'Izin'){
+            $waktu = 'I';
+        }else if($presensi->tipeWaktu == 'Sakit'){
+            $waktu = 'SKT';
+        }else if($presensi->tipeWaktu == 'Pulang Cepat'){
+            $waktu = 'PC';
+        }else if($presensi->tipeWaktu == 'CUTI'){
+            $waktu = 'CT';
+        }else{
+            $waktu = 'M';
+        }
     }else{
-        $waktu = 'M';
+        $waktu = null;
     }
     return $waktu;
+}
+
+function cekPresensiLengkap($kode)
+{
+    $presensi = Presensi::where('activityCode', $kode)->first();
+    $lengkap = null;
+    if($presensi != null){
+        $lengkap = $presensi->statusPresensi;
+    }
+    return $lengkap;
 }
 
 function cekIzin($pegawaiCode)
@@ -144,6 +182,16 @@ function getJamMasukPulang($pegawaiCode, $bulan, $tahun, $field)
     }
     return $hasil;
 
+}
+
+function getJamMasukPulangExcel($activityCode)
+{   
+    $hasil = "";
+    $presensi = Presensi::where('activityCode', $activityCode)->first();
+    if($presensi != null){
+        $hasil = $presensi->jamMasuk.' '.$presensi->jamPulang;
+    }
+    return $hasil;
 }
 
 function getCroshcekKeterangan($pegawai, $bulan, $tahun)
