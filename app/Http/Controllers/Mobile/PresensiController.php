@@ -289,7 +289,7 @@ class PresensiController extends Controller
                 ])
                 ->where('presensi.tanggalPresensi', '<>', null)
                 ->orderBy('presensi.created_at', 'desc')
-                ->select('presensi.tanggalPresensi', 'presensi.idRuleTelatMasuk', 'presensi.idRuleTelatPulang',
+                ->select('presensi.tanggalPresensi', 'presensi.idRuleTelatMasuk', 'presensi.idRuleLewatPulang',
                     'presensi.jamMasuk', 'presensi.jamPulang', 'telat1.nameTelat as telatMasuk', 'telat2.nameTelat as telatPulang'
                 )
                 ->get();
@@ -312,7 +312,7 @@ class PresensiController extends Controller
                 ->whereMonth('presensi.created_at', Carbon::now()->format('m'))
                 ->where('presensi.tanggalPresensi', '<>', null)
                 ->orderBy('presensi.created_at', 'desc')
-                ->select('presensi.tanggalPresensi', 'presensi.idRuleTelatMasuk', 'presensi.idRuleTelatPulang',
+                ->select('presensi.tanggalPresensi', 'presensi.idRuleTelatMasuk', 'presensi.idRuleLewatPulang',
                     'presensi.jamMasuk', 'presensi.jamPulang', 'telat1.nameTelat as telatMasuk', 'telat2.nameTelat as telatPulang'
                 )
                 ->get();
