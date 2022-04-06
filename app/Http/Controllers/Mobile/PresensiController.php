@@ -281,12 +281,17 @@ class PresensiController extends Controller
                 ->where('idRuleTelatMasuk', null)
                 ->where('idRuleLewatPulang', null)
                 ->count();
-            $presensi = Presensi::where('pegawaiCode', $pegawaiCode)
-                ->whereBetween('created_at', [
+            $presensi = Presensi::leftJoin('rule_telat_v2 as telat1', 'telat1.id', '=', 'presensi.idRuleTelatMasuk')
+                ->leftJoin('rule_telat_v2 as telat2', 'telat2.id', '=', 'presensi.idRuleLewatPulang')
+                ->where('presensi.pegawaiCode', $pegawaiCode)
+                ->whereBetween('presensi.created_at', [
                     Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()
                 ])
-                ->where('tanggalPresensi', '<>', null)
-                ->orderBy('created_at', 'desc')
+                ->where('presensi.tanggalPresensi', '<>', null)
+                ->orderBy('presensi.created_at', 'desc')
+                ->select('presensi.tanggalPresensi', 'presensi.idRuleTelatMasuk', 'presensi.idRuleTelatPulang',
+                    'presensi.jamMasuk', 'presensi.jamPulang', 'telat1.nameTelat as telatMasuk', 'telat2.nameTelat as telatPulang'
+                )
                 ->get();
         }else if($filter == 'bulan'){
             $countTelat = Presensi::where('pegawaiCode', $pegawaiCode)
@@ -301,10 +306,15 @@ class PresensiController extends Controller
                 ->where('idRuleLewatPulang', null)
                 ->where('tanggalPresensi', '<>', null)
                 ->count();
-            $presensi = Presensi::where('pegawaiCode', $pegawaiCode)
-                ->whereMonth('created_at', Carbon::now()->format('m'))
-                ->where('tanggalPresensi', '<>', null)
-                ->orderBy('created_at', 'desc')
+            $presensi = Presensi::leftJoin('rule_telat_v2 as telat1', 'telat1.id', '=', 'presensi.idRuleTelatMasuk')
+                ->leftJoin('rule_telat_v2 as telat2', 'telat2.id', '=', 'presensi.idRuleLewatPulang')
+                ->where('presensi.pegawaiCode', $pegawaiCode)
+                ->whereMonth('presensi.created_at', Carbon::now()->format('m'))
+                ->where('presensi.tanggalPresensi', '<>', null)
+                ->orderBy('presensi.created_at', 'desc')
+                ->select('presensi.tanggalPresensi', 'presensi.idRuleTelatMasuk', 'presensi.idRuleTelatPulang',
+                    'presensi.jamMasuk', 'presensi.jamPulang', 'telat1.nameTelat as telatMasuk', 'telat2.nameTelat as telatPulang'
+                )
                 ->get();
         }
         return response()->json(["code" => 200, "tepatWaktu" => $countTepat, "telatWaktu" => $countTelat, "data" => $presensi]);     
