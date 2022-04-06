@@ -249,7 +249,8 @@ class PresensiController extends Controller
         if($request->tglAwal != "" && $request->tglAkhir != ""){
             $presensi = Presensi::leftJoin('rule_telat_v2 as telat1', 'telat1.id', '=', 'presensi.idRuleTelatMasuk')
                 ->leftJoin('rule_telat_v2 as telat2', 'telat2.id', '=', 'presensi.idRuleLewatPulang')
-                ->where('presensi.pegawaiCode', $pegawaiCode)
+                ->where('presensi.pegawaiCode', $request->pegawaiCode)
+                ->where('presensi.tanggalPresensi', '<>', null)
                 ->whereYear('presensi.created_at', Carbon::now()->format('Y'))
                 ->whereBetween('presensi.tanggalPresensi', [
                     $request->tglAwal,  $request->tglAkhir
@@ -262,7 +263,7 @@ class PresensiController extends Controller
         }else{
             $presensi = Presensi::leftJoin('rule_telat_v2 as telat1', 'telat1.id', '=', 'presensi.idRuleTelatMasuk')
                 ->leftJoin('rule_telat_v2 as telat2', 'telat2.id', '=', 'presensi.idRuleLewatPulang')
-                ->where('presensi.pegawaiCode', $pegawaiCode)
+                ->where('presensi.pegawaiCode', $request->pegawaiCode)
                 ->whereYear('presensi.created_at', Carbon::now()->format('Y'))
                 ->where('presensi.tanggalPresensi', '<>', null)
                 ->orderBy('presensi.created_at', 'desc')
