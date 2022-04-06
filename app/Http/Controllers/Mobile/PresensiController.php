@@ -247,18 +247,28 @@ class PresensiController extends Controller
     public function fetchAllHistoryPresensi(Request $request)
     {
         if($request->tglAwal != "" && $request->tglAkhir != ""){
-            $presensi = Presensi::where('pegawaiCode', $request->pegawaiCode)
-                ->whereBetween('tanggalPresensi', [
+            $presensi = Presensi::leftJoin('rule_telat_v2 as telat1', 'telat1.id', '=', 'presensi.idRuleTelatMasuk')
+                ->leftJoin('rule_telat_v2 as telat2', 'telat2.id', '=', 'presensi.idRuleLewatPulang')
+                ->where('presensi.pegawaiCode', $pegawaiCode)
+                ->whereYear('presensi.created_at', Carbon::now()->format('Y'))
+                ->whereBetween('presensi.tanggalPresensi', [
                     $request->tglAwal,  $request->tglAkhir
                 ])
-                ->where('tanggalPresensi', '<>', null)
-                ->orderBy('created_at', 'desc')
+                ->orderBy('presensi.created_at', 'desc')
+                ->select('presensi.tanggalPresensi', 'presensi.idRuleTelatMasuk', 'presensi.idRuleLewatPulang',
+                    'presensi.jamMasuk', 'presensi.jamPulang', 'telat1.nameTelat as telatMasuk', 'telat2.nameTelat as telatPulang'
+                )
                 ->get();
         }else{
-            $presensi = Presensi::where('pegawaiCode', $request->pegawaiCode)
-                ->whereYear('created_at', Carbon::now()->format('Y'))
-                ->where('tanggalPresensi', '<>', null)
-                ->orderBy('created_at', 'desc')
+            $presensi = Presensi::leftJoin('rule_telat_v2 as telat1', 'telat1.id', '=', 'presensi.idRuleTelatMasuk')
+                ->leftJoin('rule_telat_v2 as telat2', 'telat2.id', '=', 'presensi.idRuleLewatPulang')
+                ->where('presensi.pegawaiCode', $pegawaiCode)
+                ->whereYear('presensi.created_at', Carbon::now()->format('Y'))
+                ->where('presensi.tanggalPresensi', '<>', null)
+                ->orderBy('presensi.created_at', 'desc')
+                ->select('presensi.tanggalPresensi', 'presensi.idRuleTelatMasuk', 'presensi.idRuleLewatPulang',
+                    'presensi.jamMasuk', 'presensi.jamPulang', 'telat1.nameTelat as telatMasuk', 'telat2.nameTelat as telatPulang'
+                )
                 ->get();
         }
         return response()->json(["code" => 200, "data" => $presensi]);
