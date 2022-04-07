@@ -52,13 +52,13 @@
                     <span class="nav-label">Presensi</span><i class="fa fa-angle-down arrow"></i></a>
                 <ul class="nav-2-level collapse in">
                     <li>
-                        <a @if(Request::segment(1)=='sinkronisasi' ) class="active" @endif
-                            href="{{ url('sinkronisasi') }}">Sinkronisasi</a>
+                        <a @if(Request::segment(1)=='report-presensi' ) class="active" @endif
+                            href="{{ url('report-presensi') }}">Hasil Presensi</a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a @if(Request::segment(1)=='riwayat_presensi' ) class="active" @endif
                             href="{{ url('riwayat_presensi') }}">Hasil Presensi</a>
-                    </li>
+                    </li> -->
                     <li>
                         <a @if(Request::segment(1)=='pengajuan_cuti' ) class="active" @endif
                             href="{{ url('pengajuan_cuti') }}">Cuti</a>

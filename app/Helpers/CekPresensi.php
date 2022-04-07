@@ -17,6 +17,25 @@ function cekPresensiMasuk($pegawaiCode)
     return $masuk;
 }
 
+function sumTelatTLPSW($ruangan, $pegawai, $bulan, $tipe, $telat){
+    if($tipe == "jam-masuk"){
+        $presensi = Presensi::join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
+            ->where('pegawai.idDivisi', $ruangan)
+            ->where('presensi.pegawaiCode', $pegawai)
+            ->where('presensi.idRuleTelatMasuk', $telat)
+            ->whereMonth('presensi.created_at', $bulan)
+            ->sum(\DB::raw("TIME_TO_SEC(presensi.telatMasuk)"));
+    }else if($tipe == "jam-pulang"){
+        $presensi = Presensi::join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
+            ->where('pegawai.idDivisi', $ruangan)
+            ->where('presensi.pegawaiCode', $pegawai)
+            ->where('presensi.idRuleLewatPulang', $telat)
+            ->whereMonth('presensi.created_at', $bulan)
+            ->sum(\DB::raw("TIME_TO_SEC(presensi.lewatPulang)"));
+    }
+    return gmdate("H:i:s", $presensi);
+}
+
 
 function cekPresensiPulang($pegawaiCode, $activityCode) 
 {
@@ -108,6 +127,26 @@ function crosCekPresensi($kode)
     return $waktu;
 }
 
+function cekStatistikPresensi($pegawaiCode, $bulan, $tahun, $tipe) {
+    $data = PresensiCroscheck::where('pegawaiCode', $pegawaiCode)
+        ->where('bulan', $bulan)
+        ->where('tahun', $tahun)
+        ->first();
+    $crossCheck = null;
+    if($data != null){
+        if($tipe == "masuk_kerja"){
+            $crossCheck = $data->masuk_kerja;
+        }elseif($tipe == "tidak_masuk_kerja"){
+            $crossCheck = $data->tidak_masuk_kerja;
+        }elseif($tipe == "presentase_kehadiran"){
+            $crossCheck = $data->presentase_kehadiran;
+        }else{
+            $crossCheck = $data->jumlah_kerja;
+        }
+    }
+    return $crossCheck;
+}
+
 function cekPresensiLengkap($kode)
 {
     $presensi = Presensi::where('activityCode', $kode)->first();
@@ -190,6 +229,26 @@ function getJamMasukPulangExcel($activityCode)
     $presensi = Presensi::where('activityCode', $activityCode)->first();
     if($presensi != null){
         $hasil = $presensi->jamMasuk.' '.$presensi->jamPulang;
+    }
+    return $hasil;
+}
+
+function getJamMasukExcel($activityCode)
+{   
+    $hasil = "";
+    $presensi = Presensi::where('activityCode', $activityCode)->first();
+    if($presensi != null){
+        $hasil = $presensi->jamMasuk;
+    }
+    return $hasil;
+}
+
+function getJamPulangExcel($activityCode)
+{   
+    $hasil = "";
+    $presensi = Presensi::where('activityCode', $activityCode)->first();
+    if($presensi != null){
+        $hasil = $presensi->jamPulang;
     }
     return $hasil;
 }

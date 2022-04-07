@@ -15,6 +15,7 @@ use App\Http\Controllers\Mobile\AuthController;
 use App\Http\Controllers\Web\AuthWebController;
 use App\Http\Controllers\Web\PenggunaController;
 use App\Http\Controllers\Web\CutiController;
+use App\Http\Controllers\Web\PresensiV2Controller;
 
 Route::get('login', [AuthWebController::class, 'index']);
 Route::post('proses_login', [AuthWebController::class, 'prosesLogin']);
@@ -52,6 +53,11 @@ Route::middleware('ceklogin')->group(function () {
 
     Route::resource('pengajuan_cuti', CutiController::class);
     Route::get('pengajuan_cuti/pegawai/{code}', [CutiController::class, 'showCuti']);
+
+    Route::get('report-presensi', [PresensiV2Controller::class, 'index']);
+    Route::get('report-presensi/{id}', [PresensiV2Controller::class, 'show']);
+    Route::get('fetch-history-presensi-v2', [PresensiV2Controller::class, 'fetchHistoryPresensi']);
+    Route::post('sinkronisasi-presensi-v2', [PresensiV2Controller::class, 'prosesSinkronisasi']);
 });
 
 Route::get('37b60eda89b5204fc5beda94005abe90d8cc6d25/{code}', [AuthController::class, 'viewResetPassword']);

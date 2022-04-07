@@ -193,6 +193,7 @@ class PresensiController extends Controller
                         $presensi->idRuleLewatPulang = cekTelatMasukPulang('jam-pulang', $telatMenit);
                     }else if($telatMenit >= 91){
                         $presensi->idRuleLewatPulang = cekPalingTelatPulang();
+                        $presensi->idRuleLewatPulang = "01:31:00";
                     }
                 }
             }
