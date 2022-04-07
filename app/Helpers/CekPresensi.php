@@ -79,7 +79,7 @@ function getStatusTelat($tipePresensi, $nTelat)
 function cekTelatMasukPulang($tipePresensi, $nTelat)
 {
     $ruleTelat = RuleTelatV2::where('tipe', $tipePresensi)->get();
-    $idRuleTelat = 0;
+    $idRuleTelat = null;
     foreach($ruleTelat as $row){
         if($nTelat >= $row->max_telat_1 && $nTelat <= $row->max_telat_2){
             $idRuleTelat = $row->id;
