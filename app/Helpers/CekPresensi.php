@@ -17,13 +17,14 @@ function cekPresensiMasuk($pegawaiCode)
     return $masuk;
 }
 
-function sumTelatTLPSW($ruangan, $pegawai, $bulan, $tipe, $telat){
+function sumTelatTLPSW($ruangan, $pegawai, $bulan, $tahun, $tipe, $telat){
     if($tipe == "jam-masuk"){
         $presensi = Presensi::join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
             ->where('pegawai.idDivisi', $ruangan)
             ->where('presensi.pegawaiCode', $pegawai)
             ->where('presensi.idRuleTelatMasuk', $telat)
             ->whereMonth('presensi.created_at', $bulan)
+            ->whereYear('presensi.created_at', $tahun)
             ->sum(\DB::raw("TIME_TO_SEC(presensi.telatMasuk)"));
     }else if($tipe == "jam-pulang"){
         $presensi = Presensi::join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
@@ -31,6 +32,7 @@ function sumTelatTLPSW($ruangan, $pegawai, $bulan, $tipe, $telat){
             ->where('presensi.pegawaiCode', $pegawai)
             ->where('presensi.idRuleLewatPulang', $telat)
             ->whereMonth('presensi.created_at', $bulan)
+            ->whereYear('presensi.created_at', $tahun)
             ->sum(\DB::raw("TIME_TO_SEC(presensi.lewatPulang)"));
     }
     return gmdate("H:i:s", $presensi);
@@ -58,7 +60,7 @@ function getLatestPresensi($pegawaiCode)
 
 function getStatusTelat($tipePresensi, $nTelat)
 {
-    $ruleTelat = RuleTelat::all();
+    $ruleTelat = RuleTelatV2::all();
     $idRuleTelat = 0;
     foreach($ruleTelat as $row){
         if($tipePresensi == 'jam-masuk'){
@@ -221,6 +223,28 @@ function getJamMasukPulang($pegawaiCode, $bulan, $tahun, $field)
     }
     return $hasil;
 
+}
+
+function hitungJumlahTLPSW($ruangan, $pegawaiCode, $bulan, $tahun, $tipe, $telat)
+{
+    if($tipe == "jam-masuk"){
+        $presensi = Presensi::join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
+            ->where('pegawai.idDivisi', $ruangan)
+            ->where('presensi.idRuleTelatMasuk', $telat)
+            ->where('presensi.pegawaiCode', $pegawaiCode)
+            ->whereMonth('presensi.created_at', $bulan)
+            ->whereYear('presensi.created_at', $tahun)
+            ->count();
+    }else{
+        $presensi = Presensi::join('pegawai', 'pegawai.code', '=', 'presensi.pegawaiCode')
+            ->where('pegawai.idDivisi', $ruangan)
+            ->where('presensi.idRuleLewatPulang', $telat)
+            ->where('presensi.pegawaiCode', $pegawaiCode)
+            ->whereMonth('presensi.created_at', $bulan)
+            ->whereYear('presensi.created_at', $tahun)
+            ->count();
+    }
+    return $presensi;
 }
 
 function getJamMasukPulangExcel($activityCode)

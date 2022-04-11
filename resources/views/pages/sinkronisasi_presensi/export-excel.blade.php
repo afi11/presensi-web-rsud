@@ -4,10 +4,6 @@
             <th>No</th>
             <th>Kode</th>
             <th>Nama Pegawai</th>
-            <th>Presentase Kehadiran</th>
-            <th>Kehadiran</th>
-            <th>Ketidakhadiran</th>
-            <th>Jumlah Hari Kerja</th>
             <th>1</th>
             <th>2</th>
             <th>3</th>
@@ -47,6 +43,18 @@
             <th>PSW-2</th>
             <th>PSW-3</th>
             <th>PSW-4</th>
+            <th>N TL-1</th>
+            <th>N TL-2</th>
+            <th>N TL-3</th>
+            <th>N TL-4</th>
+            <th>N PSW-1</th>
+            <th>N PSW-2</th>
+            <th>N PSW-3</th>
+            <th>N PSW-4</th>
+            <th>Kehadiran</th>
+            <th>Ketidakhadiran</th>
+            <th>Jumlah Hari Kerja</th>
+            <th>Presentase Kehadiran</th>
             <th>Keterangan</th>
         </tr>
     </thead>
@@ -58,10 +66,6 @@
             <td>{{ $no }}</td>
             <td>{{ $row->pegawaiCode }}</td>
             <td>{{ getPegawaiName($row->pegawaiCode) }}</td>
-            <td>{{ round(cekStatistikPresensi($row->pegawaiCode, $bulan, $tahun, 'presentase_kehadiran'), 2) }}</td>
-            <td>{{ cekStatistikPresensi($row->pegawaiCode, $bulan, $tahun, 'masuk_kerja') }}</td>
-            <td>{{ cekStatistikPresensi($row->pegawaiCode, $bulan, $tahun, 'tidak_masuk_kerja') }}</td>
-            <td>{{ cekStatistikPresensi($row->pegawaiCode, $bulan, $tahun, 'jumlah_kerja') }}</td>
             <td>{{ getJamMasukExcel($row->tgl_01) }}
                 <br style="mso-data-placement:same-cell;" />
                 {{ getJamPulangExcel($row->tgl_01) }}
@@ -161,14 +165,26 @@
             <td> {{  getJamMasukExcel($row->tgl_31) }} <br style="mso-data-placement:same-cell;" />
                 {{ getJamPulangExcel($row->tgl_31) }} <br style="mso-data-placement:same-cell;" />
                 {{$row->hasil_tgl_31 }}</td>
-            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, "jam-masuk", 1) }}</td>
-            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, "jam-masuk", 2) }}</td>
-            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, "jam-masuk", 3) }}</td>
-            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, "jam-masuk", 4) }}</td>
-            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, "jam-pulang", 5) }}</td>
-            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, "jam-pulang", 6) }}</td>
-            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, "jam-pulang", 7) }}</td>
-            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, "jam-pulang", 8) }}</td>
+            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, $tahun, "jam-masuk", 1) }}</td>
+            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, $tahun, "jam-masuk", 2) }}</td>
+            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, $tahun, "jam-masuk", 3) }}</td>
+            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, $tahun, "jam-masuk", 4) }}</td>
+            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, $tahun, "jam-pulang", 5) }}</td>
+            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, $tahun, "jam-pulang", 6) }}</td>
+            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, $tahun, "jam-pulang", 7) }}</td>
+            <td>{{ sumTelatTLPSW($ruangan->id, $row->pegawaiCode, $bulan, $tahun, "jam-pulang", 8) }}</td>
+            <td>{{ hitungJumlahTLPSW($ruangan->id, $row->pegawaiCode, $bulan,  $tahun, "jam-masuk", 1) }}</td>
+            <td>{{ hitungJumlahTLPSW($ruangan->id, $row->pegawaiCode, $bulan,  $tahun, "jam-masuk", 2) }}</td>
+            <td>{{ hitungJumlahTLPSW($ruangan->id, $row->pegawaiCode, $bulan,  $tahun, "jam-masuk", 3) }}</td>
+            <td>{{ hitungJumlahTLPSW($ruangan->id, $row->pegawaiCode, $bulan,  $tahun, "jam-masuk", 4) }}</td>
+            <td>{{ hitungJumlahTLPSW($ruangan->id, $row->pegawaiCode, $bulan,  $tahun, "jam-pulang", 1) }}</td>
+            <td>{{ hitungJumlahTLPSW($ruangan->id, $row->pegawaiCode, $bulan,  $tahun, "jam-pulang", 2) }}</td>
+            <td>{{ hitungJumlahTLPSW($ruangan->id, $row->pegawaiCode, $bulan,  $tahun, "jam-pulang", 3) }}</td>
+            <td>{{ hitungJumlahTLPSW($ruangan->id, $row->pegawaiCode, $bulan,  $tahun, "jam-pulang", 4) }}</td>
+            <td>{{ cekStatistikPresensi($row->pegawaiCode, $bulan, $tahun, 'masuk_kerja') }}</td>
+            <td>{{ cekStatistikPresensi($row->pegawaiCode, $bulan, $tahun, 'tidak_masuk_kerja') }}</td>
+            <td>{{ cekStatistikPresensi($row->pegawaiCode, $bulan, $tahun, 'jumlah_kerja') }}</td>
+            <td>{{ round(cekStatistikPresensi($row->pegawaiCode, $bulan, $tahun, 'presentase_kehadiran'), 2) }}</td>
             <td> {{ $row->keterangan }}</td>
         </tr>
         @endforeach

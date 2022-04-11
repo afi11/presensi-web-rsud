@@ -42,10 +42,6 @@
                         <th>No</th>
                         <th>Kode</th>
                         <th>Nama Pegawai</th>
-                        <th>Presentase Kehadiran</th>
-                        <th>Kehadiran</th>
-                        <th>Ketidakhadiran</th>
-                        <th>Jumlah Hari Kerja</th>
                         <th>1</th>
                         <th>2</th>
                         <th>3</th>
@@ -85,6 +81,18 @@
                         <th>PSW-2</th>
                         <th>PSW-3</th>
                         <th>PSW-4</th>
+                        <th>N TL-1</th>
+                        <th>N TL-2</th>
+                        <th>N TL-3</th>
+                        <th>N TL-4</th>
+                        <th>N PSW-1</th>
+                        <th>N PSW-2</th>
+                        <th>N PSW-3</th>
+                        <th>N PSW-4</th>
+                        <th>Kehadiran</th>
+                        <th>Ketidakhadiran</th>
+                        <th>Jumlah Hari Kerja</th>
+                        <th>Presentase Kehadiran</th>
                         <th>Keterangan</th>
                     </tr>
                 </thead>
@@ -159,18 +167,6 @@ var tabelHistoriPresensi = $("#datatable").DataTable({
         },
         {
             data: "nama"
-        },
-        {
-            data: "presentase_kehadiran"
-        },
-        {
-            data: "masuk_kerja"
-        },
-        {
-            data: "tidak_masuk_kerja"
-        },
-        {
-            data: "jumlah_kerja"
         },
         {
             data: "tgl_1"
@@ -288,6 +284,42 @@ var tabelHistoriPresensi = $("#datatable").DataTable({
         },
         {
             data: "PSW-4"
+        },
+        {
+            data: "nTL1"
+        },
+        {
+            data: "nTL2"
+        },
+        {
+            data: "nTL3"
+        },
+        {
+            data: "nTL4"
+        },
+        {
+            data: "nPSW1"
+        },
+        {
+            data: "nPSW2"
+        },
+        {
+            data: "nPSW3"
+        },
+        {
+            data: "nPSW4"
+        },
+        {
+            data: "masuk_kerja"
+        },
+        {
+            data: "tidak_masuk_kerja"
+        },
+        {
+            data: "jumlah_kerja"
+        },
+        {
+            data: "presentase_kehadiran"
         },
         {
             data: "keterangan"
